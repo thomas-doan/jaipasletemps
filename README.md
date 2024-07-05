@@ -30,3 +30,36 @@ Gestion des Salons : Création, jointure et gestion des salons de quiz.
 Architecture modulaire respectant la philosophie Nestjs.
 
 
+nest new project-name
+
+run application :
+ // npm run start
+
+run with dev mod debug : 
+ // npm run start:dev
+
+create full module with :
+- dto
+- controller
+- service
+- module 
+- interface
+  // nest g resource YOUR_RESOURCE_NAME
+
+create only module with :
+- module
+  // nest g module YOUR_MODULE_NAME
+
+Setup prisma : 
+- npm install @prisma/client
+- npm install prisma --save-dev
+- npx prisma init
+
+-- you need to complete in schema.prisma
+npx prisma migrate dev --name init
+
+check if the schema is correct : 
+- prisma format
+
+
+
