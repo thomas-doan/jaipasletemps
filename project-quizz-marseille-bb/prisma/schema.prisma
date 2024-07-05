@@ -6,7 +6,7 @@
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:toto@localhost:3306/quizzRoomMarseilleBB"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
