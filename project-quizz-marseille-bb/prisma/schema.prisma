@@ -19,6 +19,8 @@ model User {
   pseudo   String
   password String
   players  Player[]
+
+  @@index([email])
 }
 
 model Player {
@@ -32,7 +34,9 @@ model Player {
   quiz                 Quiz?   @relation(fields: [quizId], references: [id])
   userId               String
   user                 User    @relation(fields: [userId], references: [id])
-  victories            Int     @default(0)
+
+  @@index([quizId])
+  @@index([userId])
 }
 
 model Question {
@@ -44,6 +48,8 @@ model Question {
   themeId       String
   theme         Theme          @relation(fields: [themeId], references: [id])
   quizzes       QuizQuestion[]
+
+  @@index([themeId])
 }
 
 model Quiz {
@@ -57,6 +63,9 @@ model Quiz {
   maxPlayers           Int
   players              Player[]
   questions            QuizQuestion[]
+
+  @@index([theme1Id])
+  @@index([theme2Id])
 }
 
 model QuizQuestion {
@@ -74,6 +83,8 @@ model Theme {
   questions Question[]
   quizzes1  Quiz[]     @relation("Theme1")
   quizzes2  Quiz[]     @relation("Theme2")
+
+  @@index([name])
 }
 
 enum QuizPhase {
