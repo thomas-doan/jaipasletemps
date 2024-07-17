@@ -4,21 +4,26 @@ import { useSocket } from "@/contexts/Socket";
 import { useEffect } from "react";
 
 function SocketPage() {
-  const socket = useSocket();
-    console.log(socket);
+  const { socket, isConnected } = useSocket();
 
-//   useEffect(() => {
-//     socket.on("connect", () => {
-//       console.log(`⚡: ${socket.id} user just connected!`);
-//     });
-//     socket.on("disconnect", () => {
-//       console.log(`👋: ${socket.id} user just disconnected!`);
-//     });
-//   }, [socket]);
+  useEffect(() => {
+    if (isConnected) {
+      console.log("Socket is connected!", socket.id);
+
+      socket.on("some_event", (data) => {
+        console.log("Received event:", data);
+      });
+    }
+
+    return () => {
+      socket.off("some_event");
+    };
+  }, [socket, isConnected]);
 
   return (
     <div>
-      <h1>Test Page</h1>
+      <h1>Socket Test Page</h1>
+      <p>Connection status: {isConnected ? "Connected" : "Disconnected"}</p>
     </div>
   );
 }

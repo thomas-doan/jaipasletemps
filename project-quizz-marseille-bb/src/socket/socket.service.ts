@@ -10,8 +10,7 @@ export class SocketService implements OnModuleInit {
 
   onModuleInit() {
     this.io.on('connection', (socket: Socket) => {
-      console.log('a user connected');
-      // Handle socket events here
+      console.log('a user connected', socket.id);
 
       socket.on('disconnect', () => {
         console.log('a user disconnected');

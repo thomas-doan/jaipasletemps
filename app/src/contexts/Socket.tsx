@@ -1,32 +1,55 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useRef } from "react";
-import io from "socket.io-client";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import io, { Socket } from "socket.io-client";
 
-const SocketContext = createContext<any>(undefined);
+interface SocketContextType {
+  socket: Socket;
+  isConnected: boolean;
+}
 
-export const SocketProvider = ({ children }: any) => {
-  const socketRef = useRef<any>();
+const socket = io("http://localhost:3000/", {
+  transports: ['websocket'],
+  autoConnect: false
+});
+
+const SocketContext = createContext<SocketContextType | undefined>(undefined);
+
+export const SocketProvider = ({ children }: { children: ReactNode }) => {
+  const [isConnected, setIsConnected] = useState(socket.connected);
 
   useEffect(() => {
-    if (socketRef.current === undefined) {
-      socketRef.current = io("http://localhost:3000");
-        console.log("socketRef.current", socketRef.current);
-    //   return () => {
-    //     if (socketRef.current) {
-    //       socketRef.current.disconnect();
-    //     }
-    //   };
+    function onConnect() {
+      setIsConnected(true);
     }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+
+    socket.connect();
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.disconnect();
+    };
   }, []);
 
   return (
-    <SocketContext.Provider value={socketRef.current}>
+    <SocketContext.Provider value={{ socket, isConnected }}>
       {children}
     </SocketContext.Provider>
   );
 };
 
 export const useSocket = () => {
-  return useContext(SocketContext);
+  const context = useContext(SocketContext);
+  if (context === undefined) {
+    throw new Error('useSocket must be used within a SocketProvider');
+  }
+  return context;
 };

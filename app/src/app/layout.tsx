@@ -5,7 +5,6 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { SocketProvider } from "@/contexts/Socket";
 
-
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -23,16 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <SocketProvider>
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable
-          )}
-        >
-          {children}
-        </body>
-      </SocketProvider>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <SocketProvider>{children}</SocketProvider>
+      </body>
     </html>
   );
 }
