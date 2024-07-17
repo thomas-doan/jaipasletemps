@@ -9,7 +9,7 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    const user = await this.authService.register(registerDto.email, registerDto.pseudo, registerDto.password);
+    const user = await this.authService.register(registerDto.email, registerDto.password);
     return this.authService.generateToken(user);
   }
 

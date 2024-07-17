@@ -6,7 +6,7 @@ import { IUserService } from '../interfaces/user.service.interface';
 export class UserService implements IUserService {
     constructor(private database: DatabaseService) {}
 
-    async createUser(data: { email: string; pseudo: string; password: string }): Promise<any> {
+    async createUser(data: { email: string; password: string }): Promise<any> {
         return this.database.user.create({ data });
     }
 

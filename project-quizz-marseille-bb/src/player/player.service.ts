@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class PlayerService {
+  constructor(private database: DatabaseService) {}
   create(createPlayerDto: CreatePlayerDto) {
     return 'This action adds a new player';
   }

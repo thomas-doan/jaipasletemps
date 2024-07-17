@@ -22,13 +22,13 @@ export class AuthService implements IAuthService {
     return this.jwtService.sign(payload);
   }
 
-  async register(email: string, pseudo: string, password: string): Promise<any> {
+  async register(email: string, password: string): Promise<any> {
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.userService.createUser({ email, pseudo, password: hashedPassword });
+    return this.userService.createUser({ email, password: hashedPassword });
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
+    const payload = { email: user.email, sub: user.id, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
     };
