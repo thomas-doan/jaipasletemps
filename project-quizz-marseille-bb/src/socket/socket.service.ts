@@ -17,4 +17,7 @@ export class SocketService implements OnModuleInit {
       });
     });
   }
+  getIo(): Server {
+    return this.io;
+  }
 }
