@@ -6,8 +6,8 @@ import { PlayerModule } from './player/player.module';
 import { QuestionModule } from './question/question.module';
 import { ThemeModule } from './theme/theme.module';
 import { QuizModule } from './quiz/quiz.module';
-import { BusinessRuleModule } from './business_rule/business_rule.module';
 import { WebsocketModule } from './websocket/websocket.module';
+import { GameModule } from './game/game.module';
 
 
 @Module({
@@ -19,8 +19,8 @@ import { WebsocketModule } from './websocket/websocket.module';
     QuestionModule,
     ThemeModule,
     QuizModule,
-    BusinessRuleModule,
     WebsocketModule,
+    GameModule,
   ],
   controllers: [],
   providers: [],
