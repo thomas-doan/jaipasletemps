@@ -1,6 +1,10 @@
-import { OnGatewayInit, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Server } from "socket.io";
-import { SocketService } from "../socket.service";
+import {
+  OnGatewayInit,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import { SocketService } from '../socket.service';
 
 @WebSocketGateway({
   cors: {
