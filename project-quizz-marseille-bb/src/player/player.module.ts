@@ -1,9 +1,17 @@
+// player/player.module.ts
 import { Module } from '@nestjs/common';
 import { PlayerService } from './services/player.service';
-import { PlayerController } from './controller/player.controller';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
-  controllers: [PlayerController],
-  providers: [PlayerService],
+  imports: [DatabaseModule],
+  providers: [
+    {
+      provide: 'IPlayerService',
+      useClass: PlayerService,
+    },
+    PlayerService,
+  ],
+  exports: ['IPlayerService'],
 })
 export class PlayerModule {}

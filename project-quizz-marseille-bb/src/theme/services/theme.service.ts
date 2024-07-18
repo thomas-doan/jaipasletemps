@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateThemeDto } from './dto/create-theme.dto';
-import { UpdateThemeDto } from './dto/update-theme.dto';
+import { CreateThemeDto } from '../dto/create-theme.dto';
+import { UpdateThemeDto } from '../dto/update-theme.dto';
 
 @Injectable()
 export class ThemeService {
