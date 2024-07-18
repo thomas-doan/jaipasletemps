@@ -9,11 +9,36 @@ export class PlayerService implements IPlayerService {
 
     async addPlayer(gameId: string, playerName: string, userId: string): Promise<Player> {
 
-        return {} as Player;
+        const getUser = await this.database.user.findUnique({
+            where: { id: userId },
+        });
+        
+        const getPlayer = await this.database.player.findFirst({
+            where: { userId: getUser.id },
+        });
+
+        const findPlayerInPlayerActivites = await this.database.playerActivites.findFirst({
+            where: { playerId: getPlayer.id },
+        });
+
+        if (!findPlayerInPlayerActivites) {
+            await this.database.playerActivites.create({
+                data: {
+                    gameId,
+                    playerId: getPlayer.id,
+                },
+            });
+        }
+        return getPlayer;
     }
 
     async getPlayersInGame(gameId: string): Promise<Player[]> {
-        return [];
+        const activities = await this.database.playerActivites.findMany({
+            where: { gameId },
+            include: { player: true },
+        });
+
+        return activities.map(activity => activity.player);
     }
 
     async handleDisconnection(playerId: string): Promise<void> {

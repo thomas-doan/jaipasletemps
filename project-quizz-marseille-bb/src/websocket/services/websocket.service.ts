@@ -44,26 +44,51 @@ export class WebsocketService {
         ]);
     }
 
-    public bindHandlers(server: Server): void { 
+    public bindHandlers(server: Server): void {
         server.on('connection', (socket: Socket) => {
             this.handleEvent(socket, 'connection');
-            socket.on('disconnect', () => this.handleEvent(socket, 'disconnect'));
-            socket.on('createRoom', (data) => this.handleEvent(socket, 'createRoom', data));
-            socket.on('joinRoom', (data) => this.handleEvent(socket, 'joinRoom', data));
-            socket.on('startGame', (data) => this.handleEvent(socket, 'startGame', data));
-            socket.on('showQuestion', (data) => this.handleEvent(socket, 'showQuestion', data));
-            socket.on('submitAnswer', (data) => this.handleEvent(socket, 'submitAnswer', data));
-            socket.on('endGame', (data) => this.handleEvent(socket, 'endGame', data));
-            socket.on('restartGame', (data) => this.handleEvent(socket, 'restartGame', data));
-            socket.on('showAnswer', (data) => this.handleEvent(socket, 'showAnswer', data));
-            socket.on('closeChoice', (data) => this.handleEvent(socket, 'closeChoice', data));
+            socket.on('disconnect', () => {
+                this.handleEvent(socket, 'disconnect');
+            });
+            socket.on('createRoom', (data) => {
+                this.handleEvent(socket, 'createRoom', data);
+            });
+            socket.on('joinRoom', (data) => {
+                console.log('JoinRoom event bindhandler ckeck', data);
+                this.handleEvent(socket, 'joinRoom', data);
+            });
+            socket.on('startGame', (data) => {
+                this.handleEvent(socket, 'startGame', data);
+            });
+            socket.on('showQuestion', (data) => {
+                this.handleEvent(socket, 'showQuestion', data);
+            });
+            socket.on('submitAnswer', (data) => {
+                this.handleEvent(socket, 'submitAnswer', data);
+            });
+            socket.on('endGame', (data) => {
+                this.handleEvent(socket, 'endGame', data);
+            });
+            socket.on('restartGame', (data) => {
+                this.handleEvent(socket, 'restartGame', data);
+            });
+            socket.on('showAnswer', (data) => {
+                this.handleEvent(socket, 'showAnswer', data);
+            });
+            socket.on('closeChoice', (data) => {
+                this.handleEvent(socket, 'closeChoice', data);
+            });
         });
     }
+
 
     private async handleEvent(socket: Socket, event: string, data?: any): Promise<void> {
         const handler = this.handlers.get(event);
         if (handler) {
             await handler.handle(socket, data);
+        } else {
+            console.error(`No handler found for event: ${event}`);
         }
     }
+
 }

@@ -10,4 +10,5 @@ export interface IGameService {
     getScores(gameId: string): Promise<any>;
     findGameById(gameId: string): Promise<Game>;
     checkAnswer(game: Game, answers: string[]): Promise<boolean>;
+    findGameWithQuizById(gameId: string): Promise<Game & { quiz: { maxPlayers: number } }>;
 }

@@ -5,6 +5,7 @@ import { DatabaseModule } from '../database/database.module';
 import { PlayerModule } from '../player/player.module';
 import { QuestionService } from '../question/services/question.service';
 import { ScoreService } from './services/score.service';
+import {PlayerService} from "./services/player.service";
 
 @Module({
   imports: [DatabaseModule, PlayerModule],
@@ -13,10 +14,15 @@ import { ScoreService } from './services/score.service';
       provide: 'IGameService',
       useClass: GameService,
     },
+    {
+        provide: 'IPlayerService',
+        useClass: PlayerService,
+
+    },
     GameService,
     QuestionService,
     ScoreService,
   ],
-  exports: ['IGameService'],
+  exports: ['IGameService', 'IPlayerService'],
 })
 export class GameModule {}

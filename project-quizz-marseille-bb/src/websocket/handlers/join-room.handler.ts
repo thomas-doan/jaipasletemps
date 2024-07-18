@@ -11,22 +11,51 @@ export class JoinRoomHandler implements IGameEventsHandler {
         @Inject('IGameService') private readonly gameService: IGameService,
     ) {}
 
-    async handle(socket: Socket, data: { room: string; playerName: string; userId: string }): Promise<void> {
-/*        const game = await this.gameService.findGameById();
+
+        async handle(socket: Socket, data:{event: string; data: {gameId: string; playerName: string; userId: string }}): Promise<void> {
+        const { gameId, playerName, userId } = data.data;
+
+        if (!gameId || !playerName || !userId) {
+            console.error('Invalid data received:', data);
+            socket.emit('error', 'Invalid data received join room');
+            return;
+        }
+        const game = await this.gameService.findGameById(gameId);
         if (!game) {
             socket.emit('error', 'Room not found');
             return;
         }
 
-        const playersInRoom = await this.playerService.getPlayersInGame();
-        if (playersInRoom.length >= game.maxPlayers) {
+        const gameWithQuiz = await this.gameService.findGameWithQuizById(gameId);
+
+        const playersInRoom = await this.playerService.getPlayersInGame(gameId);
+        if (playersInRoom.length >= gameWithQuiz.quiz.maxPlayers) {
             socket.emit('roomFull', 'The room is full.');
             return;
         }
 
-        await this.playerService.addPlayer();
-        socket.join(data.room);
-        socket.emit('roomJoined', { roomId: data.room });
-        */
+        await this.playerService.addPlayer(gameId, playerName, userId);
+
+        try {
+            await socket.join(gameId);
+            console.log(`Socket ${socket.id} joined room ${gameId}`);
+            socket.emit('roomJoined', { roomId: gameId });
+            console.log(`Emitted roomJoined event with roomId ${gameId}`);
+           await this.logPlayersInRoom(socket, gameId);
+        }
+        catch (err) {
+            console.error(`Error joining room ${gameId}:`, err);
+            socket.emit('error', 'Error joining room');
+        }
+        
     }
+
+    private async logPlayersInRoom(socket: Socket, gameId: string): Promise<void> {
+        const players = await this.playerService.getPlayersInGame(gameId);
+        console.log(`Players in room WS ${gameId}:`);
+        players.forEach(player => {
+            console.log(`Player WS individuel: ${player.name}`);
+        });
+    }
+
 }
