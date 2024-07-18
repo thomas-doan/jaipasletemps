@@ -14,7 +14,6 @@ export class SocketService {
 
   public bindHandler(server: Server): void {
     server.on('connection', (socket: Socket) => {
-      console.log(`Client connected: ${socket.id}`);
       this.handleEvent(socket, 'connection');
     });
   }

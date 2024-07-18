@@ -5,9 +5,6 @@ import { SocketService } from "../socket.service";
 @WebSocketGateway({
   cors: {
     origin: '*',
-    methods: ['GET', 'POST'], 
-    allowedHeaders: ['Content-Type', 'Authorization'], 
-    credentials: true, 
   },
 })
 export class GameGateway implements OnGatewayInit {
