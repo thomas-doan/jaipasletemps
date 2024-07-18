@@ -44,7 +44,7 @@ export class WebsocketService {
         ]);
     }
 
-    public bindHandlers(server: Server): void {
+    public bindHandlers(server: Server): void { 
         server.on('connection', (socket: Socket) => {
             this.handleEvent(socket, 'connection');
             socket.on('disconnect', () => this.handleEvent(socket, 'disconnect'));
