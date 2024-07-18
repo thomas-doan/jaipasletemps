@@ -8,6 +8,8 @@ import { ThemeModule } from './theme/theme.module';
 import { QuizModule } from './quiz/quiz.module';
 import { BusinessRuleModule } from './business_rule/business_rule.module';
 import { SocketService } from './socket/socket.service';
+import { GamesModule } from './games/games.module';
+import { SocketModule } from './socket/socket.module';
 
 
 @Module({
@@ -20,8 +22,10 @@ import { SocketService } from './socket/socket.service';
     ThemeModule,
     QuizModule,
     BusinessRuleModule,
+    GamesModule,
+    SocketModule
   ],
   controllers: [],
-  providers: [SocketService],
+  providers: [],
 })
 export class AppModule {}
