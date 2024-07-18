@@ -8,6 +8,7 @@ import { ThemeModule } from './theme/theme.module';
 import { QuizModule } from './quiz/quiz.module';
 import { WebsocketModule } from './websocket/websocket.module';
 import { GameModule } from './game/game.module';
+import { CrateQuizModule } from './crate-quiz/crate-quiz.module';
 
 
 @Module({
@@ -21,6 +22,7 @@ import { GameModule } from './game/game.module';
     QuizModule,
     WebsocketModule,
     GameModule,
+    CrateQuizModule,
   ],
   controllers: [],
   providers: [],
