@@ -49,12 +49,12 @@
         joinButton.onclick = () => {
           currentGameId = data.gameId;
           containerBtnLeave.appendChild(leaveButton);
-          socket.emit("joinExistingGame", { gameId: data.gameId });
+          socket.emit("create-room", { roomId: data.roomId });
         };
         joinButton.style.display = "block";
       });
 
-      socket.on("socketsInRoom", (data) => {
+      socket.on("players", (data) => {
         console.log("Sockets in room", data);
         userInRoom.innerHTML = `Il y a ${data.length} utilisateur(s) dans la salle`;
       });
