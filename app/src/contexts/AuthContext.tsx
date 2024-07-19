@@ -1,5 +1,11 @@
 "use client";
-import React, { useContext, createContext, useState } from "react";
+import React, {
+  useContext,
+  createContext,
+  useState,
+  useEffect,
+} from "react";
+import * as jwt from "jsonwebtoken";
 
 const AuthContext = createContext<any>(null);
 
@@ -9,11 +15,24 @@ export function useAuth() {
 
 export function AuthProvider({ children }: any) {
   interface User {
-    email: string;
-    password: string;
+    email?: string;
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+    token?: string;
+    role?: string;
+    player?: string;
+    isAuth?: boolean;
   }
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>({ isAuth: false });
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const login = async (email: string, password: string) => {
     if (!email || !password) {
@@ -29,10 +48,24 @@ export function AuthProvider({ children }: any) {
       });
       const data = await response.json();
       console.log(data);
-      setUser({ email, password });
+      const token = jwt.decode(data.access_token) as jwt.JwtPayload;
+      if (token) {
+        const newUser = {
+          email: token.email,
+          role: token.role,
+          token: data.access_token,
+          isAuth: true,
+        };
+        setUser(newUser);
+        localStorage.setItem("user", JSON.stringify(newUser));
+      }
     } catch (error) {
       console.error(error);
     }
+  };
+  const logout = () => {
+    setUser({ isAuth: false });
+    localStorage.removeItem("user");
   };
 
   const registerContext = async (email: string, password: string) => {
