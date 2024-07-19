@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ThemeService } from './theme.service';
-import { CreateThemeDto } from './dto/create-theme.dto';
-import { UpdateThemeDto } from './dto/update-theme.dto';
+import { ThemeService } from '../services/theme.service';
+import { CreateThemeDto } from '../dto/create-theme.dto';
+import { UpdateThemeDto } from '../dto/update-theme.dto';
 
 @Controller('theme')
 export class ThemeController {
