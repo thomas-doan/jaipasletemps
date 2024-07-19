@@ -20,7 +20,7 @@
       const socket = io("http://localhost:3000/");
       let currentGameId = null;
 
-      socket.on("connect", () => {
+      socket.on("connection", () => {
         console.log("Connecté au serveur");
       });
 
@@ -67,6 +67,9 @@
             socketId: socket.id,
           });
         }
+        socket.on("disconnect", () => {
+        console.log("Connecté au serveur");
+      });
       });
     </script>
   </body>

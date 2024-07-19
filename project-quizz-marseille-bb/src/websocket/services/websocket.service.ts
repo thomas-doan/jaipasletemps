@@ -11,6 +11,7 @@ import { EndGameHandler } from '../handlers/end-game.handler';
 import { RestartGameHandler } from '../handlers/restart-game.handler';
 import { ShowAnswerHandler } from '../handlers/show-answer.handler';
 import { CloseChoiceHandler } from '../handlers/close-choice.handler';
+import { LeaveRoomHandler } from '../handlers/leave-room.handler';
 
 @Injectable()
 export class WebsocketService {
@@ -25,6 +26,7 @@ export class WebsocketService {
         private readonly showQuestionHandler: ShowQuestionHandler,
         private readonly submitAnswerHandler: SubmitAnswerHandler,
         private readonly endGameHandler: EndGameHandler,
+        private readonly leaveRoomHandler: LeaveRoomHandler,
         private readonly restartGameHandler: RestartGameHandler,
         private readonly showAnswerHandler: ShowAnswerHandler,
         private readonly closeChoiceHandler: CloseChoiceHandler,
@@ -38,6 +40,7 @@ export class WebsocketService {
             ['showQuestion', this.showQuestionHandler],
             ['submitAnswer', this.submitAnswerHandler],
             ['endGame', this.endGameHandler],
+            ['leaveRoom', this.leaveRoomHandler],
             ['restartGame', this.restartGameHandler],
             ['showAnswer', this.showAnswerHandler],
             ['closeChoice', this.closeChoiceHandler],
@@ -51,11 +54,11 @@ export class WebsocketService {
                 this.handleEvent(socket, 'disconnect');
             });
             socket.on('createRoom', (data) => {
-                this.handleEvent(socket, 'createRoom', data);
+                this.handleEvent(socket, 'createRoom', data, server);
             });
             socket.on('joinRoom', (data) => {
                 console.log('JoinRoom event bindhandler ckeck', data);
-                this.handleEvent(socket, 'joinRoom', data);
+                this.handleEvent(socket, 'joinRoom', data, server);
             });
             socket.on('startGame', (data) => {
                 this.handleEvent(socket, 'startGame', data);
@@ -68,6 +71,9 @@ export class WebsocketService {
             });
             socket.on('endGame', (data) => {
                 this.handleEvent(socket, 'endGame', data);
+            });
+            socket.on('leaveRoom', (data) => {
+                this.handleEvent(socket, 'leaveRoom', data);
             });
             socket.on('restartGame', (data) => {
                 this.handleEvent(socket, 'restartGame', data);
@@ -82,13 +88,27 @@ export class WebsocketService {
     }
 
 
-    private async handleEvent(socket: Socket, event: string, data?: any): Promise<void> {
+    private async handleEvent(socket: Socket, event: string, data?: any, server?: Server): Promise<void> {
         const handler = this.handlers.get(event);
         if (handler) {
-            await handler.handle(socket, data);
+            await handler.handle(socket, data, server);
         } else {
             console.error(`No handler found for event: ${event}`);
         }
+    }
+
+    public getAllRooms(server: Server): string[] {
+        return Object.keys(server.sockets.adapter.rooms);
+    }
+
+    public getRoomsWithPlayers(server: Server): string[] {
+        const rooms = this.getAllRooms(server);
+        return rooms.filter((room) => server.sockets.adapter.rooms.get(room).size > 0);
+    }
+
+    public broadcastRooms(server: Server): void {
+        const rooms = this.getRoomsWithPlayers(server);
+        server.emit('roomsList', rooms);
     }
 
 }

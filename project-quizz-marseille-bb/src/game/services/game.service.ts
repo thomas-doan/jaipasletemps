@@ -8,116 +8,144 @@ import { Game } from '@prisma/client';
 
 @Injectable()
 export class GameService implements IGameService {
-    private receivedAnswers: Map<string, { playerId: string; isCorrect: boolean }[]> = new Map();
+  private receivedAnswers: Map<
+    string,
+    { playerId: string; isCorrect: boolean }[]
+  > = new Map();
 
-    constructor(
-        private readonly database: DatabaseService,
-        @Inject('IPlayerService') private readonly playerService: IPlayerService,
-        private readonly questionService: QuestionService,
-        private readonly scoreService: ScoreService,
-    ) {}
+  constructor(
+    private readonly database: DatabaseService,
+    @Inject('IPlayerService') private readonly playerService: IPlayerService,
+    private readonly questionService: QuestionService,
+    private readonly scoreService: ScoreService,
+  ) {}
 
-    async create(quizId: string, playerName: string, userId: string): Promise<Game> {
-        const quiz = await this.database.quiz.findUnique({
-            where: { id: quizId },
-        });
+  async create(
+    quizId: string,
+    gameName: string,
+    playerId: string,
+    userId: string,
+  ): Promise<Game> {
+    const quiz = await this.database.quiz.findUnique({
+      where: { id: quizId },
+    });
 
-        if (!quiz) {
-            throw new Error('Quiz not found');
-        }
-
-        const totalQuestions = await this.database.quizQuestion.count({ where: { quizId } });
-
-        const game = await this.database.game.create({
-            data: {
-                quizId,
-                name: quiz.name,
-                description: quiz.description,
-                total_question: totalQuestions,
-                score: {},
-                ownerGameId: userId,
-                status: 'OPEN',
-                joker_used: {},
-                disconnected_players: {},
-                current_question: 0,
-            },
-        });
-
-
-
-        const getUser = await this.database.player.findFirst({
-            where: { userId: userId },
-        });
-
-        if (!getUser) {
-            throw new Error('Player not found');
-        }
-
-
-
-        await this.database.playerActivites.create({
-            data: {
-                playerId: getUser.id,
-                gameId: game.id,
-            },
-        });
-
-        return game;
+    if (!quiz) {
+      throw new Error('Quiz not found');
     }
 
-    async startGame(gameId: string): Promise<void> {
-        // Implementation for starting the game
+    const totalQuestions = await this.database.quizQuestion.count({
+      where: { quizId },
+    });
+
+    const game = await this.database.game.create({
+      data: {
+        quizId,
+        name: gameName,
+        description: quiz.description,
+        total_question: totalQuestions,
+        score: {},
+        ownerGameId: userId,
+        status: 'OPEN',
+        joker_used: {},
+        disconnected_players: {},
+        current_question: 0,
+      },
+    });
+
+    const getUser = await this.database.player.findFirst({
+      where: { id: playerId },
+    });
+
+    if (!getUser) {
+      throw new Error('Player not found');
     }
 
-    async restartGame(gameId: string): Promise<void> {
-        // Implementation for restarting the game
-    }
+    await this.database.playerActivites.create({
+      data: {
+        playerId: getUser.id,
+        gameId: game.id,
+      },
+    });
 
-    async endGame(gameId: string): Promise<void> {
-        await this.database.game.delete({ where: { id: gameId } });
-    }
+    return game;
+  }
 
-    async showQuestion(gameId: string): Promise<any> {
-        // Implementation for showing the question
-    }
+  async playerInGame(gameId: string): Promise<any> {
+    const players = await this.database.playerActivites.findMany({
+      where: { gameId },
+      select: {
+        playerId: true,
+      },
+    });
 
-    async showAnswer(gameId: string): Promise<any> {
-        // Implementation for showing the answer
-    }
+    return players;
+  }
 
-    async answerQuestion(gameId: string, playerId: string, answers: string[]): Promise<boolean[]> {
-        // Implementation for answering the question
-        return [true];
-    }
+  async startGame(gameId: string): Promise<void> {
+    // Implementation for starting the game
+  }
 
-    async closeChoice(gameId: string): Promise<void> {
-        // Implementation for closing choice
-    }
+  async restartGame(gameId: string): Promise<void> {
+    // Implementation for restarting the game
+  }
 
-    async getScores(gameId: string): Promise<any> {
-        // Implementation for getting scores
-    }
+  async endGame(gameId: string): Promise<void> {
+    await this.database.game.delete({ where: { id: gameId } });
+  }
 
-    async findGameById(gameId: string): Promise<Game> {
-        // Implementation for finding game by ID
-        return {} as Game;
-    }
+  async leaveGame(gameId: string, playerId: string): Promise<void> {
+    await this.database.playerActivites.delete({
+      where: { playerId_gameId: { playerId, gameId } },
+    });
+  }
+  async showQuestion(gameId: string): Promise<any> {
+    // Implementation for showing the question
+  }
 
-    async checkAnswer(game: Game, answers: string[]): Promise<boolean> {
-        // Implementation for checking answer
-        return true;
-    }
+  async showAnswer(gameId: string): Promise<any> {
+    // Implementation for showing the answer
+  }
 
-    async findGameWithQuizById(gameId: string): Promise<Game & { quiz: { maxPlayers: number } }> {
-        return this.database.game.findUnique({
-            where: { id: gameId },
-            include: {
-                quiz: {
-                    select: {
-                        maxPlayers: true,
-                    },
-                },
-            },
-        });
-    }
+  async answerQuestion(
+    gameId: string,
+    playerId: string,
+    answers: string[],
+  ): Promise<boolean[]> {
+    // Implementation for answering the question
+    return [true];
+  }
+
+  async closeChoice(gameId: string): Promise<void> {
+    // Implementation for closing choice
+  }
+
+  async getScores(gameId: string): Promise<any> {
+    // Implementation for getting scores
+  }
+
+  async findGameById(gameId: string): Promise<Game> {
+    // Implementation for finding game by ID
+    return {} as Game;
+  }
+
+  async checkAnswer(game: Game, answers: string[]): Promise<boolean> {
+    // Implementation for checking answer
+    return true;
+  }
+
+  async findGameWithQuizById(
+    gameId: string,
+  ): Promise<Game & { quiz: { maxPlayers: number } }> {
+    return this.database.game.findUnique({
+      where: { id: gameId },
+      include: {
+        quiz: {
+          select: {
+            maxPlayers: true,
+          },
+        },
+      },
+    });
+  }
 }

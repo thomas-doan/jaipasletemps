@@ -1,10 +1,5 @@
 "use client";
-import React, {
-  useContext,
-  createContext,
-  useState,
-  useEffect,
-} from "react";
+import React, { useContext, createContext, useState, useEffect } from "react";
 import * as jwt from "jsonwebtoken";
 
 const AuthContext = createContext<any>(null);
@@ -15,6 +10,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }: any) {
   interface User {
+    id?: string;
     email?: string;
     password?: string;
     firstName?: string;
@@ -47,13 +43,16 @@ export function AuthProvider({ children }: any) {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
-      console.log(data);
+
       const token = jwt.decode(data.access_token) as jwt.JwtPayload;
+
       if (token) {
         const newUser = {
+          id: token.sub,
           email: token.email,
           role: token.role,
           token: data.access_token,
+          player: token.players.length > 0 ? token.players[0] : null,
           isAuth: true,
         };
         setUser(newUser);

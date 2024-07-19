@@ -7,25 +7,21 @@ import { Player } from '@prisma/client';
 export class PlayerService implements IPlayerService {
     constructor(private database: DatabaseService) {}
 
-    async addPlayer(gameId: string, playerName: string, userId: string): Promise<Player> {
+    async addPlayer(gameId: string, playerId: string): Promise<Player> {
 
-        const getUser = await this.database.user.findUnique({
-            where: { id: userId },
-        });
-        
         const getPlayer = await this.database.player.findFirst({
-            where: { userId: getUser.id },
+            where: { id: playerId },
         });
 
         const findPlayerInPlayerActivites = await this.database.playerActivites.findFirst({
-            where: { playerId: getPlayer.id },
+            where: { playerId: playerId },
         });
 
         if (!findPlayerInPlayerActivites) {
             await this.database.playerActivites.create({
                 data: {
                     gameId,
-                    playerId: getPlayer.id,
+                    playerId: playerId,
                 },
             });
         }

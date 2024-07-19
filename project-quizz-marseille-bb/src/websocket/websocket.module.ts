@@ -14,6 +14,7 @@ import { CloseChoiceHandler } from './handlers/close-choice.handler';
 import { WebsocketService } from './services/websocket.service';
 import { GameModule } from '../game/game.module';
 import { GameGateway } from './gateways/game.gateway';
+import { LeaveRoomHandler } from './handlers/leave-room.handler';
 
 @Module({
   imports: [GameModule, PlayerModule],
@@ -27,6 +28,7 @@ import { GameGateway } from './gateways/game.gateway';
     ShowQuestionHandler,
     SubmitAnswerHandler,
     EndGameHandler,
+    LeaveRoomHandler,
     RestartGameHandler,
     ShowAnswerHandler,
     CloseChoiceHandler,
