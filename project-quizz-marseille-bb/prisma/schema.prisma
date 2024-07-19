@@ -41,6 +41,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   players   Player[]
+  Game      Game[]
 
   @@index([email])
 }
@@ -78,10 +79,12 @@ model Game {
   current_question     Int               @default(0)
   total_question       Int               @default(0)
   quizId               String
+  ownerGameId          String
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
   players              PlayerActivites[]
   quiz                 Quiz              @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  owner                User              @relation(fields: [ownerGameId], references: [id], onDelete: Cascade)
 }
 
 model PlayerHistories {
