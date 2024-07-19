@@ -17,7 +17,7 @@ export const RegisterForm: FC<RegisterFormProps> = (props) => {
     const { email, password } = data;
     try {
       await registerContext(email, password);
-      setSuccessRegister(true);
+      setSuccessRegister(false);
     } catch (error) {
       console.error(error);
     }

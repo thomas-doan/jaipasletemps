@@ -9,15 +9,15 @@ export function useAuth() {
 
 export function AuthProvider({ children }: any) {
   interface User {
-    username: string;
+    email: string;
     password: string;
   }
 
   const [user, setUser] = useState<User | null>(null);
 
-  const login = async (username: string, password: string) => {
-    if (!username || !password) {
-      throw new Error("Missing username or password");
+  const login = async (email: string, password: string) => {
+    if (!email || !password) {
+      throw new Error("Missing email or password");
     }
     try {
       const response = await fetch("http://localhost:3000/auth/login", {
@@ -25,21 +25,21 @@ export function AuthProvider({ children }: any) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
       console.log(data);
-      setUser({ username, password });
+      setUser({ email, password });
     } catch (error) {
       console.error(error);
     }
   };
 
-  const registerContext = (username: string, password: string) => {
-    if (!username || !password) {
-      throw new Error("Missing username or password");
+  const registerContext = async (email: string, password: string) => {
+    if (!email || !password) {
+      throw new Error("Missing email or password");
     }
-    setUser({ username, password });
+    setUser({ email, password });
     try {
       (async () => {
         const response = await fetch("http://localhost:3000/auth/register", {
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: any) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ email, password }),
         });
         const data = await response.json();
         console.log(data);
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: any) {
   // Autres fonctions d'authentification
 
   return (
-    <AuthContext.Provider value={{ user, login }}>
+    <AuthContext.Provider value={{ user, login, registerContext }}>
       {children}
     </AuthContext.Provider>
   );

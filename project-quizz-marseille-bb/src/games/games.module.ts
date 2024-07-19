@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { GamesController } from './games.controller';
 import { DatabaseModule } from 'src/database/database.module';
-import { SocketModule } from 'src/socket/socket.module';
-
 @Module({
   imports: [DatabaseModule],
   controllers: [GamesController],

@@ -10,7 +10,7 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     const user = await this.authService.register(registerDto.email, registerDto.password);
-    return this.authService.generateToken(user);
+    return { token: this.authService.generateToken(user) };
   }
 
   @Post('login')
