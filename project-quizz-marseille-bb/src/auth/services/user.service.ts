@@ -11,6 +11,6 @@ export class UserService implements IUserService {
     }
 
     async findByEmail(email: string): Promise<any> {
-        return this.database.user.findUnique({ where: { email } });
+        return this.database.user.findUnique({ where: { email }, include: { players: true } });
     }
 }
