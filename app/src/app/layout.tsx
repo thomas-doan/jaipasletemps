@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { cn } from "@/lib/utils";
 import { SocketProvider } from "@/contexts/Socket";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -28,7 +29,9 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <SocketProvider>{children}</SocketProvider>
+        <SocketProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </SocketProvider>
       </body>
     </html>
   );

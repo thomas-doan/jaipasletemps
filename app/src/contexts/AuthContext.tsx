@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext, createContext, useState } from "react";
 
 const AuthContext = createContext<any>(null);
@@ -34,7 +35,7 @@ export function AuthProvider({ children }: any) {
     }
   };
 
-  const register = (username: string, password: string) => {
+  const registerContext = (username: string, password: string) => {
     if (!username || !password) {
       throw new Error("Missing username or password");
     }
