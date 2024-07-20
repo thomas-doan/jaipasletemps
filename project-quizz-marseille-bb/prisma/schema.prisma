@@ -47,7 +47,7 @@ model User {
 }
 
 model Player {
-  id               String            @id @default(uuid())
+  id               String            @id @unique @default(uuid())
   name             String
   elo              Int               @default(0)
   userId           String
@@ -69,7 +69,7 @@ model PlayerActivites {
 }
 
 model Game {
-  id                   String            @id @default(uuid())
+  id                   String            @id @unique @default(uuid())
   name                 String
   description          String            @db.Text
   score                Json
@@ -99,7 +99,7 @@ model PlayerHistories {
 }
 
 model HistoryGame {
-  id              String            @id @default(uuid())
+  id              String            @id @unique @default(uuid())
   score           Json
   joker_used      Json
   total_question  Int
@@ -112,7 +112,7 @@ model HistoryGame {
 }
 
 model Quiz {
-  id           String         @id @default(uuid())
+  id           String         @id @unique @default(uuid())
   name         String
   description  String         @db.Text
   difficulty   Difficulty
@@ -131,7 +131,7 @@ model Quiz {
 }
 
 model Question {
-  id             String          @id @default(uuid())
+  id             String          @id @unique @default(uuid())
   text           String          @db.Text
   correctAnswer  String
   themeId        String?
@@ -151,14 +151,14 @@ model QuizQuestion {
 }
 
 model Answer {
-  id         String   @id @default(uuid())
+  id         String   @id @unique @default(uuid())
   text       String
   questionId String
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
 model Theme {
-  id           String          @id @default(uuid())
+  id           String          @id @unique @default(uuid())
   name         String          @unique
   description  String          @db.Text
   questions    Question[]
@@ -179,7 +179,7 @@ model ThemeQuestion {
 }
 
 model Joker {
-  id          String   @id @default(uuid())
+  id          String   @id @unique @default(uuid())
   name        String   @unique
   description String   @db.Text
   createdAt   DateTime @default(now())
