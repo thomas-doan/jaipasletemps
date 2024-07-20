@@ -19,4 +19,5 @@ export interface IGameService {
   findGameWithQuizById(
     gameId: string,
   ): Promise<Game & { quiz: { maxPlayers: number } }>;
+  getActiveGames(activeRooms: string[]): Promise<Game[]>;
 }

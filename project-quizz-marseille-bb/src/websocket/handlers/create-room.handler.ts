@@ -2,11 +2,13 @@ import { Injectable, Inject } from '@nestjs/common';
 import { IGameEventsHandler } from '../interfaces/game-events.handler.interface';
 import { IGameService } from '../../game/interfaces/game.service.interface';
 import { Server, Socket } from 'socket.io';
+import { GameUtilsService } from '../services/gameUtils.service';
 
 @Injectable()
 export class CreateRoomHandler implements IGameEventsHandler {
   constructor(
     @Inject('IGameService') private readonly gameService: IGameService,
+    private readonly gameUtilsService: GameUtilsService,
   ) {}
 
   async handle(
@@ -45,20 +47,16 @@ export class CreateRoomHandler implements IGameEventsHandler {
         console.log(`Socket ${socket.id} joined room ${game.id}`);
         socket.emit('roomCreated', { roomId: game.id, quizId: game.quizId });
         console.log(`Emitted roomCreated event with roomId ${game.id}`);
-        
-        const rooms = server.sockets.adapter.rooms;
-        const activeRooms = [];
-        
-        // Parcourir toutes les salles
-        for (const [roomId, room] of rooms.entries()) {
-            // Vérifier si la salle n'est pas une salle "privée" (c'est-à-dire, pas juste un socket individuel)
-            if (room.size > 1 || (room.size === 1 && !server.sockets.sockets.has(roomId))) {
-                activeRooms.push(roomId);
-            }
+
+        const activeRooms = await this.gameUtilsService.getActiveRooms(server);
+        if (activeRooms.length > 0) {
+          const activeGames =
+            await this.gameService.getActiveGames(activeRooms);
+          console.log('Active rooms:', activeGames);
+          server.emit('activeRoomsList', activeGames);
+        } else {
+          console.log('No active rooms');
         }
-        
-        console.log('Active rooms:', activeRooms);
-        server.emit('activeRoomsList', activeRooms);
       } catch (err) {
         console.error(`Error joining room ${game.id}:`, err);
         socket.emit('error', 'Error joining room');

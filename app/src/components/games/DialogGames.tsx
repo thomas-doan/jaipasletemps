@@ -1,4 +1,4 @@
-import { FC, use, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,16 +8,17 @@ import {
 } from "@/components/ui/dialog";
 import { QuizGame } from "./QuizGame";
 import { useSocket } from "@/contexts/Socket";
-import { set } from "react-hook-form";
+import { GamePlayersScore } from "./GamePlayersScore";
 
 interface DialogGamesProps {
   open: boolean;
   setOpen: (value: boolean) => void;
   quiz: any;
+  gameId: string;
 }
 export const DialogGames: FC<DialogGamesProps> = (props) => {
   const { socket } = useSocket();
-  const { open, setOpen, quiz } = props;
+  const { open, setOpen, quiz, gameId } = props;
   const [roomJoined, setRoomJoined] = useState(false);
   const [playersList, setPlayersList] = useState<any>([]);
 
@@ -26,14 +27,14 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
       console.log("Room joined", data);
       setRoomJoined(true);
     });
-    socket.on("playerJoined", (data:any) => {
+    socket.on("playersList", (data: any) => {
       console.log("Player joined", data);
-      setPlayersList([...playersList, data.player]);
+      setPlayersList(data);
     });
     setRoomJoined(false);
   }, [socket]);
 
-  console.log(quiz);
+  console.log("dialog quizz", quiz);
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -41,7 +42,13 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
           <DialogHeader>
             <DialogTitle>Quiz Game</DialogTitle>
             <DialogDescription>
-              <QuizGame quizData={quiz} />
+              <div className="flex flex-col">
+                <QuizGame quizData={quiz} gameId={gameId} />
+                {playersList.length > 0 &&
+                  playersList.map((player: any) => (
+                    <GamePlayersScore key={player.id} players={player} />
+                  ))}
+              </div>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>

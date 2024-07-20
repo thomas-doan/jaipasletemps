@@ -44,7 +44,8 @@ export class JoinRoomHandler implements IGameEventsHandler {
       console.log(`Socket ${socket.id} joined room ${gameId}`);
       socket.emit('roomJoined', { roomId: gameId, player: playerId });
       console.log(`Emitted roomJoined event with roomId ${gameId}`);
-      server.to(gameId).emit('playerJoined', { player: playerId });
+      const players = await this.playerService.getPlayersInGame(gameId);
+      server.to(gameId).emit('playersList', players);
       await this.logPlayersInRoom(socket, gameId);
     } catch (err) {
       console.error(`Error joining room ${gameId}:`, err);

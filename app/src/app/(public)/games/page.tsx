@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSocket } from "@/contexts/Socket";
 import { useEffect, useState } from "react";
 import { DialogGames } from "@/components/games/DialogGames";
+import { CardGames } from "@/components/games/CardGames";
 
 function GamePage() {
   const { socket } = useSocket();
@@ -13,9 +14,9 @@ function GamePage() {
   const [roomList, setRoomList] = useState<any>(null);
   const [quiz, setQuiz] = useState<any>(null);
   const [quizId, setQuizId] = useState<any>(null);
+  const [gameId, setGameId] = useState<any>(null);
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
-  console.log(user);
 
   useEffect(() => {
     socket.on("connection", () => {
@@ -25,13 +26,18 @@ function GamePage() {
     socket.on("roomCreated", (data) => {
       console.log("Room created", data);
       setQuizId(data.quizId);
+      setGameId(data.gameId);
     });
 
-    socket.on("roomList", (data) => {
+    socket.on("activeRoomsList", (data) => {
       console.log("Room list received", data);
-      setRoomList(data.roomList);
+      setRoomList(data);
     });
 
+    socket.on("roomJoined", (data) => {
+      console.log("Room joined", data);
+      setGameId(data.gameId);
+    });
     socket.on("disconnect", () => {
       console.log("Disconnected from socket");
     });
@@ -54,27 +60,43 @@ function GamePage() {
     }
   }, [quizId]);
 
+  console.log("roomList", roomList);
   return (
-    <div>
-      <h1>Game Page</h1>
-      <Button
-        onClick={() => {
-          socket.emit("createRoom", {
-            data: {
-              quizId: "770e8400-e29b-41d4-a716-446655440000",
-              gameName: "totoro",
-              playerId: user.player.id,
-              userId: user.id,
-            },
-          });
-          setJoinRoom(true);
-          setOpen(true);
-        }}
-      >
-        Créer une nouvelle partie
-      </Button>
-      <DialogGames open={open} setOpen={setOpen} quiz={quiz} />
-    </div>
+    <section className="grid grid-flow-col lg:grid-cols-[auto,1fr] lg:gap-4 bg-flora-white 2xl:px-52 xl:px-12 pt-12">
+      <div>
+        <Button
+          onClick={() => {
+            socket.emit("createRoom", {
+              data: {
+                quizId: "770e8400-e29b-41d4-a716-446655440000",
+                gameName: "totoro",
+                playerId: user.player.id,
+                userId: user.id,
+              },
+            });
+            setJoinRoom(true);
+            setOpen(true);
+          }}
+        >
+          Créer une nouvelle partie
+        </Button>
+      </div>
+      <DialogGames open={open} setOpen={setOpen} quiz={quiz} gameId={gameId} />
+      <div>
+        {roomList && roomList.length > 0 ? (
+          roomList.map((room: any) => (
+            <CardGames
+              key={room.id}
+              gameList={room}
+              setOpen={setOpen}
+              setQuizId={setQuizId}
+            />
+          ))
+        ) : (
+          <div>Pas de partie en cours</div>
+        )}
+      </div>
+    </section>
   );
 }
 

@@ -15,100 +15,105 @@ import { LeaveRoomHandler } from '../handlers/leave-room.handler';
 
 @Injectable()
 export class WebsocketService {
-    private handlers: Map<string, any>;
+  private handlers: Map<string, any>;
 
-    constructor(
-        private readonly connectionHandler: ConnectionHandler,
-        private readonly disconnectionHandler: DisconnectionHandler,
-        private readonly createRoomHandler: CreateRoomHandler,
-        private readonly joinRoomHandler: JoinRoomHandler,
-        private readonly startGameHandler: StartGameHandler,
-        private readonly showQuestionHandler: ShowQuestionHandler,
-        private readonly submitAnswerHandler: SubmitAnswerHandler,
-        private readonly endGameHandler: EndGameHandler,
-        private readonly leaveRoomHandler: LeaveRoomHandler,
-        private readonly restartGameHandler: RestartGameHandler,
-        private readonly showAnswerHandler: ShowAnswerHandler,
-        private readonly closeChoiceHandler: CloseChoiceHandler,
-    ) {
-        this.handlers = new Map<string, any>([
-            ['connection', this.connectionHandler],
-            ['disconnect', this.disconnectionHandler],
-            ['createRoom', this.createRoomHandler],
-            ['joinRoom', this.joinRoomHandler],
-            ['startGame', this.startGameHandler],
-            ['showQuestion', this.showQuestionHandler],
-            ['submitAnswer', this.submitAnswerHandler],
-            ['endGame', this.endGameHandler],
-            ['leaveRoom', this.leaveRoomHandler],
-            ['restartGame', this.restartGameHandler],
-            ['showAnswer', this.showAnswerHandler],
-            ['closeChoice', this.closeChoiceHandler],
-        ]);
+  constructor(
+    private readonly connectionHandler: ConnectionHandler,
+    private readonly disconnectionHandler: DisconnectionHandler,
+    private readonly createRoomHandler: CreateRoomHandler,
+    private readonly joinRoomHandler: JoinRoomHandler,
+    private readonly startGameHandler: StartGameHandler,
+    private readonly showQuestionHandler: ShowQuestionHandler,
+    private readonly submitAnswerHandler: SubmitAnswerHandler,
+    private readonly endGameHandler: EndGameHandler,
+    private readonly leaveRoomHandler: LeaveRoomHandler,
+    private readonly restartGameHandler: RestartGameHandler,
+    private readonly showAnswerHandler: ShowAnswerHandler,
+    private readonly closeChoiceHandler: CloseChoiceHandler,
+  ) {
+    this.handlers = new Map<string, any>([
+      ['connection', this.connectionHandler],
+      ['disconnect', this.disconnectionHandler],
+      ['createRoom', this.createRoomHandler],
+      ['joinRoom', this.joinRoomHandler],
+      ['startGame', this.startGameHandler],
+      ['showQuestion', this.showQuestionHandler],
+      ['submitAnswer', this.submitAnswerHandler],
+      ['endGame', this.endGameHandler],
+      ['leaveRoom', this.leaveRoomHandler],
+      ['restartGame', this.restartGameHandler],
+      ['showAnswer', this.showAnswerHandler],
+      ['closeChoice', this.closeChoiceHandler],
+    ]);
+  }
+
+  public bindHandlers(server: Server): void {
+    server.on('connection', (socket: Socket) => {
+      this.handleEvent(socket, 'connection');
+      socket.on('disconnect', () => {
+        this.handleEvent(socket, 'disconnect');
+      });
+      socket.on('createRoom', (data) => {
+        this.handleEvent(socket, 'createRoom', data, server);
+      });
+      socket.on('joinRoom', (data) => {
+        console.log('JoinRoom event bindhandler ckeck', data);
+        this.handleEvent(socket, 'joinRoom', data, server);
+      });
+      socket.on('startGame', (data) => {
+        this.handleEvent(socket, 'startGame', data);
+      });
+      socket.on('showQuestion', (data) => {
+        this.handleEvent(socket, 'showQuestion', data);
+      });
+      socket.on('submitAnswer', (data) => {
+        this.handleEvent(socket, 'submitAnswer', data);
+      });
+      socket.on('endGame', (data) => {
+        this.handleEvent(socket, 'endGame', data);
+      });
+      socket.on('leaveRoom', (data) => {
+        this.handleEvent(socket, 'leaveRoom', data);
+      });
+      socket.on('restartGame', (data) => {
+        this.handleEvent(socket, 'restartGame', data);
+      });
+      socket.on('showAnswer', (data) => {
+        this.handleEvent(socket, 'showAnswer', data);
+      });
+      socket.on('closeChoice', (data) => {
+        this.handleEvent(socket, 'closeChoice', data);
+      });
+    });
+  }
+
+  private async handleEvent(
+    socket: Socket,
+    event: string,
+    data?: any,
+    server?: Server,
+  ): Promise<void> {
+    const handler = this.handlers.get(event);
+    if (handler) {
+      await handler.handle(socket, data, server);
+    } else {
+      console.error(`No handler found for event: ${event}`);
     }
+  }
 
-    public bindHandlers(server: Server): void {
-        server.on('connection', (socket: Socket) => {
-            this.handleEvent(socket, 'connection');
-            socket.on('disconnect', () => {
-                this.handleEvent(socket, 'disconnect');
-            });
-            socket.on('createRoom', (data) => {
-                this.handleEvent(socket, 'createRoom', data, server);
-            });
-            socket.on('joinRoom', (data) => {
-                console.log('JoinRoom event bindhandler ckeck', data);
-                this.handleEvent(socket, 'joinRoom', data, server);
-            });
-            socket.on('startGame', (data) => {
-                this.handleEvent(socket, 'startGame', data);
-            });
-            socket.on('showQuestion', (data) => {
-                this.handleEvent(socket, 'showQuestion', data);
-            });
-            socket.on('submitAnswer', (data) => {
-                this.handleEvent(socket, 'submitAnswer', data);
-            });
-            socket.on('endGame', (data) => {
-                this.handleEvent(socket, 'endGame', data);
-            });
-            socket.on('leaveRoom', (data) => {
-                this.handleEvent(socket, 'leaveRoom', data);
-            });
-            socket.on('restartGame', (data) => {
-                this.handleEvent(socket, 'restartGame', data);
-            });
-            socket.on('showAnswer', (data) => {
-                this.handleEvent(socket, 'showAnswer', data);
-            });
-            socket.on('closeChoice', (data) => {
-                this.handleEvent(socket, 'closeChoice', data);
-            });
-        });
-    }
+  public getAllRooms(server: Server): string[] {
+    return Object.keys(server.sockets.adapter.rooms);
+  }
 
+  public getRoomsWithPlayers(server: Server): string[] {
+    const rooms = this.getAllRooms(server);
+    return rooms.filter(
+      (room) => server.sockets.adapter.rooms.get(room).size > 0,
+    );
+  }
 
-    private async handleEvent(socket: Socket, event: string, data?: any, server?: Server): Promise<void> {
-        const handler = this.handlers.get(event);
-        if (handler) {
-            await handler.handle(socket, data, server);
-        } else {
-            console.error(`No handler found for event: ${event}`);
-        }
-    }
-
-    public getAllRooms(server: Server): string[] {
-        return Object.keys(server.sockets.adapter.rooms);
-    }
-
-    public getRoomsWithPlayers(server: Server): string[] {
-        const rooms = this.getAllRooms(server);
-        return rooms.filter((room) => server.sockets.adapter.rooms.get(room).size > 0);
-    }
-
-    public broadcastRooms(server: Server): void {
-        const rooms = this.getRoomsWithPlayers(server);
-        server.emit('roomsList', rooms);
-    }
-
+  public broadcastRooms(server: Server): void {
+    const rooms = this.getRoomsWithPlayers(server);
+    server.emit('roomsList', rooms);
+  }
 }

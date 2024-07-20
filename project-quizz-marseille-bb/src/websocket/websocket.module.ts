@@ -15,6 +15,7 @@ import { WebsocketService } from './services/websocket.service';
 import { GameModule } from '../game/game.module';
 import { GameGateway } from './gateways/game.gateway';
 import { LeaveRoomHandler } from './handlers/leave-room.handler';
+import { GameUtilsService } from './services/gameUtils.service';
 
 @Module({
   imports: [GameModule, PlayerModule],
@@ -33,6 +34,7 @@ import { LeaveRoomHandler } from './handlers/leave-room.handler';
     ShowAnswerHandler,
     CloseChoiceHandler,
     WebsocketService,
+    GameUtilsService,
   ],
   exports: [WebsocketService],
 })

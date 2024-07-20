@@ -148,4 +148,17 @@ export class GameService implements IGameService {
       },
     });
   }
+
+  async getActiveGames(activeRooms: string[]): Promise<Game[]> {
+    const games = [];
+    for (const roomId of activeRooms) {
+      const game = await this.database.game.findUnique({
+        where: { id: roomId },
+      });
+      if (game) {
+        games.push(game);
+      }
+    }
+    return games;
+  }
 }
