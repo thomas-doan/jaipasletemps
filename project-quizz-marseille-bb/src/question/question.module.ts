@@ -8,7 +8,8 @@ import { DatabaseModule } from '../database/database.module';
   controllers: [QuestionController],
   providers: [
     QuestionService,
+    { provide: 'IQuestionService', useClass: QuestionService },
   ],
-  exports: [QuestionService],
+  exports: ['IQuestionService', QuestionService],
 })
 export class QuestionModule {}

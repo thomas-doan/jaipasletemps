@@ -82,8 +82,19 @@ export class GameService implements IGameService {
     return players;
   }
 
-  async startGame(gameId: string): Promise<void> {
-    // Implementation for starting the game
+  async startGame(gameId: string): Promise<Game> {
+    const game = await this.database.game.findUnique({
+      where: { id: gameId },
+    });
+    if (!game) {
+      throw new Error('Game not found');
+    }
+    await this.database.game.update({
+      where: { id: gameId },
+      data: { status: 'IN_PROGRESS' },
+    });
+
+    return game;
   }
 
   async restartGame(gameId: string): Promise<void> {
@@ -160,5 +171,20 @@ export class GameService implements IGameService {
       }
     }
     return games;
+  }
+
+  async updateScore(gameId: string, score: string): Promise<Game> {
+    const game = await this.database.game.findUnique({ where: { id: gameId } });
+
+    if (!game) {
+      throw new Error('Game not found');
+    }
+
+    const updateScore = await this.database.game.update({
+      where: { id: gameId },
+      data: { score: JSON.stringify(score) },
+    });
+
+    return updateScore;
   }
 }

@@ -16,9 +16,10 @@ import { GameModule } from '../game/game.module';
 import { GameGateway } from './gateways/game.gateway';
 import { LeaveRoomHandler } from './handlers/leave-room.handler';
 import { GameUtilsService } from './services/gameUtils.service';
+import { QuestionModule } from 'src/question/question.module';
 
 @Module({
-  imports: [GameModule, PlayerModule],
+  imports: [GameModule, PlayerModule, QuestionModule],
   providers: [
     GameGateway,
     ConnectionHandler,

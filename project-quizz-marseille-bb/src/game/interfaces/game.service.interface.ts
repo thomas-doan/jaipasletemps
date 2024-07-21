@@ -7,7 +7,7 @@ export interface IGameService {
     playerId: string,
     userId: string,
   ): Promise<Game>;
-  startGame(gameId: string): Promise<void>;
+  startGame(gameId: string): Promise<Game>;
   restartGame(gameId: string): Promise<void>;
   endGame(gameId: string): Promise<void>;
   leaveGame(gameId: string, playerId: string): Promise<void>;
@@ -20,4 +20,5 @@ export interface IGameService {
     gameId: string,
   ): Promise<Game & { quiz: { maxPlayers: number } }>;
   getActiveGames(activeRooms: string[]): Promise<Game[]>;
+  updateScore(gameId: string, score: string): Promise<any>;
 }

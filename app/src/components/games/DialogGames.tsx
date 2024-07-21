@@ -21,6 +21,8 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
   const { open, setOpen, quiz, gameId } = props;
   const [roomJoined, setRoomJoined] = useState(false);
   const [playersList, setPlayersList] = useState<any>([]);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameData, setGameData] = useState<any>(null);
 
   useEffect(() => {
     socket.on("roomJoined", (data) => {
@@ -31,6 +33,13 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
       console.log("Player joined", data);
       setPlayersList(data);
     });
+
+    socket.on("gameStarted", (data) => {
+      console.log("Game started", data);
+      setGameStarted(true);
+      setGameData(data);
+    });
+
     setRoomJoined(false);
   }, [socket]);
 
@@ -43,7 +52,9 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
             <DialogTitle>Quiz Game</DialogTitle>
             <DialogDescription>
               <div className="flex flex-col">
-                <QuizGame quizData={quiz} gameId={gameId} />
+                {gameStarted && gameData && (
+                  <QuizGame quizData={quiz} gameId={gameId} />
+                )}
                 {playersList.length > 0 &&
                   playersList.map((player: any) => (
                     <GamePlayersScore key={player.id} players={player} />
