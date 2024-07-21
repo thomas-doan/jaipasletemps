@@ -9,6 +9,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { WebsocketService } from '../services/websocket.service';
+import {WebSocketEvents} from "../enum/websocket-events.enum";
 
 @WebSocketGateway({
     cors: {
@@ -36,48 +37,48 @@ export class GameGateway
         this.logger.log(`Client disconnected: ${client.id}`);
     }
 
-    @SubscribeMessage('createRoom')
+    @SubscribeMessage(WebSocketEvents.CREATE_ROOM)
     handleCreateRoom(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, 'createRoom', payload);
+        this.websocketService.handleEvent(client, WebSocketEvents.CREATE_ROOM, payload);
     }
 
-    @SubscribeMessage('joinRoom')
+    @SubscribeMessage(WebSocketEvents.JOIN_ROOM)
     handleJoinRoom(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, 'joinRoom', payload);
+        this.websocketService.handleEvent(client, WebSocketEvents.JOIN_ROOM, payload);
     }
 
-    @SubscribeMessage('startGame')
+    @SubscribeMessage(WebSocketEvents.START_GAME)
     handleStartGame(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, 'startGame', payload);
+        this.websocketService.handleEvent(client, WebSocketEvents.START_GAME, payload);
     }
 
-    @SubscribeMessage('showQuestion')
+    @SubscribeMessage(WebSocketEvents.SHOW_NEXT_QUESTION)
     handleShowQuestion(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, 'showQuestion', payload);
+        this.websocketService.handleEvent(client, WebSocketEvents.SHOW_NEXT_QUESTION, payload);
     }
 
-    @SubscribeMessage('submitAnswer')
+    @SubscribeMessage(WebSocketEvents.SUBMIT_ANSWER)
     handleSubmitAnswer(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, 'submitAnswer', payload);
+        this.websocketService.handleEvent(client, WebSocketEvents.SUBMIT_ANSWER, payload);
     }
 
-    @SubscribeMessage('endGame')
+    @SubscribeMessage(WebSocketEvents.END_GAME)
     handleEndGame(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, 'endGame', payload);
+        this.websocketService.handleEvent(client, WebSocketEvents.END_GAME, payload);
     }
 
-    @SubscribeMessage('restartGame')
+    @SubscribeMessage(WebSocketEvents.RESTART_GAME)
     handleRestartGame(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, 'restartGame', payload);
+        this.websocketService.handleEvent(client, WebSocketEvents.RESTART_GAME, payload);
     }
 
-    @SubscribeMessage('showAnswer')
+    @SubscribeMessage(WebSocketEvents.SHOW_ANSWER)
     handleShowAnswer(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, 'showAnswer', payload);
+        this.websocketService.handleEvent(client, WebSocketEvents.SHOW_ANSWER, payload);
     }
 
-    @SubscribeMessage('closeChoice')
+    @SubscribeMessage(WebSocketEvents.CLOSE_CHOICE)
     handleCloseChoice(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, 'closeChoice', payload);
+        this.websocketService.handleEvent(client, WebSocketEvents.CLOSE_CHOICE, payload);
     }
 }

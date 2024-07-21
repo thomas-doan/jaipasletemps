@@ -6,11 +6,10 @@ import { DisconnectionHandler } from '../handlers/disconnection.handler';
 import { CreateRoomHandler } from '../handlers/create-room.handler';
 import { JoinRoomHandler } from '../handlers/join-room.handler';
 import { StartGameHandler } from '../handlers/start-game.handler';
-import { ShowQuestionHandler } from '../handlers/show-question.handler';
+import { ShowNextQuestionHandler } from '../handlers/show-next-question.handler';
 import { SubmitAnswerHandler } from '../handlers/submit-answer.handler';
 import { EndGameHandler } from '../handlers/end-game.handler';
 import { RestartGameHandler } from '../handlers/restart-game.handler';
-import { ShowAnswerHandler } from '../handlers/show-answer.handler';
 import { CloseChoiceHandler } from '../handlers/close-choice.handler';
 
 @Injectable()
@@ -24,11 +23,10 @@ export class WebsocketService implements OnModuleInit {
         private readonly createRoomHandler: CreateRoomHandler,
         private readonly joinRoomHandler: JoinRoomHandler,
         private readonly startGameHandler: StartGameHandler,
-        private readonly showQuestionHandler: ShowQuestionHandler,
+        private readonly showNextQuestionHandler: ShowNextQuestionHandler,
         private readonly submitAnswerHandler: SubmitAnswerHandler,
         private readonly endGameHandler: EndGameHandler,
         private readonly restartGameHandler: RestartGameHandler,
-        private readonly showAnswerHandler: ShowAnswerHandler,
         private readonly closeChoiceHandler: CloseChoiceHandler,
     ) {
         this.handlers = new Map<string, any>([
@@ -37,11 +35,10 @@ export class WebsocketService implements OnModuleInit {
             ['createRoom', this.createRoomHandler],
             ['joinRoom', this.joinRoomHandler],
             ['startGame', this.startGameHandler],
-            ['showQuestion', this.showQuestionHandler],
+            ['showNextQuestion', this.showNextQuestionHandler],
             ['submitAnswer', this.submitAnswerHandler],
             ['endGame', this.endGameHandler],
             ['restartGame', this.restartGameHandler],
-            ['showAnswer', this.showAnswerHandler],
             ['closeChoice', this.closeChoiceHandler],
         ]);
     }

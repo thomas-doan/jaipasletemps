@@ -6,12 +6,13 @@ import { QuestionService } from '../../question/services/question.service';
 import { ScoreService } from './score.service';
 import {Game, Status} from '@prisma/client';
 import {WebsocketService} from "../../websocket/services/websocket.service";
-import {GameQuestions} from "../model/game-questions.model";
 import {Score} from "../model/score.model";
+import {WebSocketEvents} from "../../websocket/enum/websocket-events.enum";
 
 @Injectable()
 export class GameService implements IGameService {
     private gameIntervals: Map<string, NodeJS.Timeout> = new Map();
+    public firstCorrectAnswer: { [gameId: string]: string | null } = {};
 
     constructor(
         @Inject(forwardRef(() => WebsocketService))
@@ -33,7 +34,7 @@ export class GameService implements IGameService {
         if (!quiz) {
             throw new Error('Quiz not found');
         }
-        const gameQuestions = await this.initializeGameQuestion(quizId);
+        const gameQuestions = await this.questionService.initizializeQuestions(quizId);
 
         const game = await this.database.game.create({
             data: {
@@ -43,10 +44,10 @@ export class GameService implements IGameService {
                 total_question: gameQuestions.getTotalQuestions(),
                 score: {},
                 ownerGameId: userId,
-                status: 'OPEN',
+                status: Status.OPEN,
                 joker_used: {},
                 disconnected_players: {},
-                current_question: 0,
+                current_question: 1,
             },
         });
 
@@ -73,7 +74,7 @@ export class GameService implements IGameService {
         return game;
     }
 
-    private async initializeGameQuestion(quizId: string) {
+/*    private async initializeGameQuestion(quizId: string) {
         const quizQuestions = await this.database.quizQuestion.findMany({
             where: {quizId},
             include: {question: true},
@@ -86,7 +87,7 @@ export class GameService implements IGameService {
         const questions = quizQuestions.map(q => q.question);
         const gameQuestionsInstance = GameQuestions.getInstance(questions);
         return gameQuestionsInstance;
-    }
+    }*/
 
     async startGame(gameId: string): Promise<void> {
         const server = this.websocketService.getServer();
@@ -94,7 +95,6 @@ export class GameService implements IGameService {
         if (!game) {
             throw new Error('Game not found');
         }
-
 
         const players = await this.database.playerActivites.findMany({
             where: { gameId: gameId },
@@ -104,55 +104,74 @@ export class GameService implements IGameService {
         })
         const scoreInstance = Score.getInstance(players);
 
-
-
         await this.database.game.update({
             where: { id: game.id },
             data: {
                 status: Status.IN_PROGRESS,
-                current_question: 1,
                 score: scoreInstance.getScoreJsonFormated(),
             },
         });
 
- /*       this.sendNextQuestion(game.id, server);
-        const interval = setInterval(() => {
-            this.sendNextQuestion(game.id, server);
-        }, 30000);
 
-        this.gameIntervals.set(game.id, interval);*/
+           await this.showNextQuestion(game.id);
     }
 
-    async sendNextQuestion(gameId: string, server: any): Promise<void> {
-        const game = await this.findGameById(gameId);
+    async showNextQuestion(gameId: string): Promise<void> {
+        console.log('showNextQuestion');
+        let game = await this.findGameById(gameId);
         if (!game) {
             throw new Error('Game not found');
         }
 
         if (game.current_question > game.total_question) {
-            clearInterval(this.gameIntervals.get(gameId) as unknown as number);
-
-            game.status = 'FINISHED';
             await this.database.game.update({
                 where: { id: gameId },
                 data: {
-                    status: 'FINISHED',
+                    status: Status.FINISHED,
                 },
             });
-            server.to(gameId).emit('end', { message: 'Game over', score: game.score });
+
+            this.websocketService.getServer().to(gameId).emit('end', { message: 'Game over', score: game.score });
             return;
         }
 
-        const question = await this.questionService.getQuestionByIndex(game.quizId, game.current_question);
-        server.to(gameId).emit('question', question);
+        this.firstCorrectAnswer[gameId] = null;
 
-        await this.database.game.update({
-            where: { id: gameId },
-            data: {
-                current_question: game.current_question + 1,
-            },
-        });
+        console.log(`Fetching question for index: ${game.current_question}`);
+        const question = await this.questionService.getQuestionByIndexAssociateWithChoice(game.current_question);
+        console.log('questionEncoursDanslaBoucle', question);
+
+        if (!question) {
+            throw new Error('Question not found');
+        }
+
+        this.websocketService.getServer().to(gameId).emit(WebSocketEvents.SHOW_NEXT_QUESTION, question);
+
+        setTimeout(async () => {
+            await this.database.game.update({
+                where: { id: gameId },
+                data: {
+                    current_question: game.current_question + 1,
+                },
+            });
+
+            game = await this.findGameById(gameId);
+            if (game && game.current_question <= game.total_question) {
+                this.showNextQuestion(gameId);
+            } else {
+                await this.database.game.update({
+                    where: { id: gameId },
+                    data: {
+                        status: Status.FINISHED,
+                    },
+                });
+
+                this.websocketService.getServer().to(gameId).emit('end', { message: 'Game over', score: game.score });
+            }
+        }, 30000);
     }
+
+
 
     async restartGame(gameId: string): Promise<void> {
         // Implementation for restarting the game
@@ -166,17 +185,36 @@ export class GameService implements IGameService {
         });
     }
 
-    async showQuestion(gameId: string): Promise<any> {
-        // Implementation for showing the question
-    }
+    async answerQuestion(gameId: string, playerId: string, answers: string[]): Promise<boolean> {
+        const game = await this.database.game.findUnique({
+            where: { id: gameId },
+        });
 
-    async showAnswer(gameId: string): Promise<any> {
-        // Implementation for showing the answer
-    }
+        if (!game) {
+            throw new Error('Game not found');
+        }
 
-    async answerQuestion(gameId: string, playerId: string, answers: string[]): Promise<boolean[]> {
-        // Implementation for answering the question
-        return [true];
+        const currentQuestion = await this.questionService.getQuestionByIndexAssociateWithChoice(game.current_question);
+
+        if (!currentQuestion) {
+            throw new Error('Question not found');
+        }
+
+        const isCorrect = answers.includes(currentQuestion.correctAnswer);
+
+        if (isCorrect) {
+            const scoreInstance = Score.getInstance();
+            scoreInstance.updateScore(playerId);
+
+            await this.database.game.update({
+                where: { id: gameId },
+                data: {
+                    score: scoreInstance.getScoreJsonFormated(),
+                },
+            });
+        }
+
+        return isCorrect;
     }
 
     async closeChoice(gameId: string): Promise<void> {

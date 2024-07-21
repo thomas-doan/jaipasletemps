@@ -5,6 +5,7 @@ import {IQuestionService} from "../interfaces/question.service.interface";
 import {DatabaseService} from "../../database/database.service";
 import {WebsocketService} from "../../websocket/services/websocket.service";
 import {Question} from "@prisma/client";
+import {GameQuestions} from "../../game/model/game-questions.model";
 
 @Injectable()
 export class QuestionService implements IQuestionService {
@@ -36,15 +37,34 @@ export class QuestionService implements IQuestionService {
     return `This action removes a #${id} question`;
   }
 
- async getQuestionByIndex(quizId: string, indexCurrentNumber: number): Promise<Question> {
- return Promise.resolve(undefined);
+ async getQuestionByIndexAssociateWithChoice(indexCurrentNumber: number) {
+     const gameQuestionsInstance =  GameQuestions.getInstance();
+     return gameQuestionsInstance.getQuestionWithIndexAssociateChoice(indexCurrentNumber);
  }
 
   findQuestionsByTheme(themeId: string): Promise<Question[]> {
     return Promise.resolve([]);
   }
 
-  initizializeQuestions(): Promise<void> {
-    return Promise.resolve(undefined);
+  async initizializeQuestions(quizId: string) {
+      // need to include Answer
+      const quizQuestions = await this.database.quizQuestion.findMany({
+          where: {quizId},
+            include: {
+                question: {
+                    include: {
+                        answers: true,
+                    },
+                },
+            },
+      });
+
+      if (quizQuestions.length === 0) {
+          throw new Error('Quiz has no questions');
+      }
+
+      const questions = quizQuestions.map(q => q.question);
+      const gameQuestionsInstance = GameQuestions.getInstance(this.database, questions);
+      return gameQuestionsInstance;
   }
 }

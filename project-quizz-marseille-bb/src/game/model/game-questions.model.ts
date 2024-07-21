@@ -1,23 +1,27 @@
 import { Question } from '@prisma/client';
+import { DatabaseService } from "../../database/database.service";
 
 export class GameQuestions {
     private static instance: GameQuestions;
     private questions: Question[];
 
-    constructor(questions: Question[]) {
+    private constructor(private readonly database: DatabaseService, questions: Question[]) {
         this.questions = questions;
     }
 
-    public static getInstance(questions: Question[]): GameQuestions {
-        if (!GameQuestions.instance) {
-            GameQuestions.instance = new GameQuestions(questions);
+    public static getInstance(database?: DatabaseService, questions?: Question[]): GameQuestions {
+        if (!GameQuestions.instance && database && questions) {
+            GameQuestions.instance = new GameQuestions(database, questions);
         }
         return GameQuestions.instance;
     }
 
-    public getQuestionWithIndex(index: number): Question {
-        index = this.adapterIndex(index);
-        return this.questions[index];
+    public getQuestionWithIndexAssociateChoice(index: number) {
+        const adaptedIndex = this.adapterIndex(index);
+        if (adaptedIndex < 0 || adaptedIndex >= this.questions.length) {
+            return null;
+        }
+        return this.questions[adaptedIndex];
     }
 
     private adapterIndex(index: number): number {
