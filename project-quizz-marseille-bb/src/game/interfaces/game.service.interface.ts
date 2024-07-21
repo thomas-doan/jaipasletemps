@@ -5,6 +5,7 @@ export interface IGameService {
     startGame(gameId: string): Promise<void>;
     restartGame(gameId: string): Promise<void>;
     endGame(gameId: string): Promise<void>;
+    sendNextQuestion(gameId: string, server: any): Promise<void>;
     showQuestion(gameId: string): Promise<any>;
     showAnswer(gameId: string): Promise<any>;
     getScores(gameId: string): Promise<any>;

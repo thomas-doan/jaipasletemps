@@ -1,6 +1,6 @@
-// websocket/websocket.module.ts
-import { Module } from '@nestjs/common';
-import { PlayerModule } from '../player/player.module';
+import {forwardRef, Module} from '@nestjs/common';
+import { GameModule } from '../game/game.module';
+import { GameGateway } from './gateways/game.gateway';
 import { ConnectionHandler } from './handlers/connection.handler';
 import { DisconnectionHandler } from './handlers/disconnection.handler';
 import { CreateRoomHandler } from './handlers/create-room.handler';
@@ -13,13 +13,12 @@ import { RestartGameHandler } from './handlers/restart-game.handler';
 import { ShowAnswerHandler } from './handlers/show-answer.handler';
 import { CloseChoiceHandler } from './handlers/close-choice.handler';
 import { WebsocketService } from './services/websocket.service';
-import { GameModule } from '../game/game.module';
-import { GameGateway } from './gateways/game.gateway';
 
 @Module({
-  imports: [GameModule, PlayerModule],
+  imports: [forwardRef(() => GameModule)],
   providers: [
     GameGateway,
+    WebsocketService,
     ConnectionHandler,
     DisconnectionHandler,
     CreateRoomHandler,
@@ -31,7 +30,6 @@ import { GameGateway } from './gateways/game.gateway';
     RestartGameHandler,
     ShowAnswerHandler,
     CloseChoiceHandler,
-    WebsocketService,
   ],
   exports: [WebsocketService],
 })

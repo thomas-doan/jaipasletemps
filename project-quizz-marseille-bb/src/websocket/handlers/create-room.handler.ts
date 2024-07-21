@@ -18,7 +18,6 @@ export class CreateRoomHandler implements IGameEventsHandler {
             socket.emit('error', 'Invalid data received');
             return;
         }
-
         try {
             const game = await this.gameService.create(quizId, playerName, userId);
             console.log('Game created:', game);

@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { IPlayerService } from '../interfaces/player.service.interface';
 import { Player } from '@prisma/client';
+import {WebsocketService} from "../../websocket/services/websocket.service";
 
 @Injectable()
 export class PlayerService implements IPlayerService {
-    constructor(private database: DatabaseService) {}
+    constructor(private database: DatabaseService,
+                @Inject(forwardRef(() => WebsocketService))
+                private readonly websocketService: WebsocketService) {}
 
     async addPlayer(gameId: string, playerName: string, userId: string): Promise<Player> {
 
@@ -29,6 +32,16 @@ export class PlayerService implements IPlayerService {
                 },
             });
         }
+
+        // test pr voir les id dans la room
+
+        const server = this.websocketService.getServer();
+        const clients = server.sockets.adapter.rooms.get(gameId);
+        const socketIds = clients ? Array.from(clients) : [];
+
+        console.log(`Socket IDs in room ${gameId}:`, socketIds);
+
+
         return getPlayer;
     }
 

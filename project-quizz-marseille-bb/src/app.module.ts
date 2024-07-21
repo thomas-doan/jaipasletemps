@@ -7,6 +7,9 @@ import { PlayerModule } from './player/player.module';
 import { QuestionModule } from './question/question.module';
 import { ThemeModule } from './theme/theme.module';
 import { WebsocketModule } from './websocket/websocket.module';
+import { SharedModule } from './shared/shared.module';
+
+
 
 @Module({
   imports: [
@@ -18,6 +21,8 @@ import { WebsocketModule } from './websocket/websocket.module';
     QuestionModule,
     ThemeModule,
     WebsocketModule,
+    SharedModule,
+
   ],
 })
 export class AppModule {}

@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import { ConnectionHandler } from '../handlers/connection.handler';
 import { DisconnectionHandler } from '../handlers/disconnection.handler';
@@ -13,7 +14,8 @@ import { ShowAnswerHandler } from '../handlers/show-answer.handler';
 import { CloseChoiceHandler } from '../handlers/close-choice.handler';
 
 @Injectable()
-export class WebsocketService {
+export class WebsocketService implements OnModuleInit {
+    private server: Server;
     private handlers: Map<string, any>;
 
     constructor(
@@ -44,51 +46,32 @@ export class WebsocketService {
         ]);
     }
 
+    setServer(server: Server) {
+        this.server = server;
+    }
+    
+    getServer(): Server {
+        if (!this.server) {
+            throw new Error('WebSocket server not initialized');
+        }
+        return this.server;
+    }
+
+    onModuleInit() {
+        console.log('WebsocketService initialized');
+    }
+
     public bindHandlers(server: Server): void {
         server.on('connection', (socket: Socket) => {
             this.handleEvent(socket, 'connection');
-            socket.on('disconnect', () => {
-                this.handleEvent(socket, 'disconnect');
-            });
-            socket.on('createRoom', (data) => {
-                this.handleEvent(socket, 'createRoom', data);
-            });
-            socket.on('joinRoom', (data) => {
-                console.log('JoinRoom event bindhandler ckeck', data);
-                this.handleEvent(socket, 'joinRoom', data);
-            });
-            socket.on('startGame', (data) => {
-                this.handleEvent(socket, 'startGame', data);
-            });
-            socket.on('showQuestion', (data) => {
-                this.handleEvent(socket, 'showQuestion', data);
-            });
-            socket.on('submitAnswer', (data) => {
-                this.handleEvent(socket, 'submitAnswer', data);
-            });
-            socket.on('endGame', (data) => {
-                this.handleEvent(socket, 'endGame', data);
-            });
-            socket.on('restartGame', (data) => {
-                this.handleEvent(socket, 'restartGame', data);
-            });
-            socket.on('showAnswer', (data) => {
-                this.handleEvent(socket, 'showAnswer', data);
-            });
-            socket.on('closeChoice', (data) => {
-                this.handleEvent(socket, 'closeChoice', data);
-            });
+            socket.on('disconnect', () => this.handleEvent(socket, 'disconnect'));
         });
     }
 
-
-    private async handleEvent(socket: Socket, event: string, data?: any): Promise<void> {
+    public async handleEvent(socket: Socket, event: string, data?: any): Promise<void> {
         const handler = this.handlers.get(event);
         if (handler) {
             await handler.handle(socket, data);
-        } else {
-            console.error(`No handler found for event: ${event}`);
         }
     }
-
 }

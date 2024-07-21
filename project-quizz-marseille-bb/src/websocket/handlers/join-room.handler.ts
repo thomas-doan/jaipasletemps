@@ -17,20 +17,22 @@ export class JoinRoomHandler implements IGameEventsHandler {
 
         if (!gameId || !playerName || !userId) {
             console.error('Invalid data received:', data);
-            socket.emit('error', 'Invalid data received join room');
+            socket.to(gameId).emit('error', 'Invalid data received join room');
             return;
         }
         const game = await this.gameService.findGameById(gameId);
         if (!game) {
-            socket.emit('error', 'Room not found');
+            socket.to(gameId).emit('error', 'Room not found');
             return;
         }
 
-        const gameWithQuiz = await this.gameService.findGameWithQuizById(gameId);
+        const gameWithQuiz = await this.gameService.findGameWithQuizById(game.id);
 
-        const playersInRoom = await this.playerService.getPlayersInGame(gameId);
+        console.log('gamewithquiz', gameWithQuiz);
+
+        const playersInRoom = await this.playerService.getPlayersInGame(game.id);
         if (playersInRoom.length >= gameWithQuiz.quiz.maxPlayers) {
-            socket.emit('roomFull', 'The room is full.');
+            socket.to(gameId).emit('roomFull', 'The room is full.');
             return;
         }
 
@@ -39,13 +41,13 @@ export class JoinRoomHandler implements IGameEventsHandler {
         try {
             await socket.join(gameId);
             console.log(`Socket ${socket.id} joined room ${gameId}`);
-            socket.emit('roomJoined', { roomId: gameId });
+            socket.to(gameId).emit('roomJoined', { roomId: gameId });
             console.log(`Emitted roomJoined event with roomId ${gameId}`);
            await this.logPlayersInRoom(socket, gameId);
         }
         catch (err) {
             console.error(`Error joining room ${gameId}:`, err);
-            socket.emit('error', 'Error joining room');
+            socket.to(gameId).emit('error', 'Error joining room');
         }
         
     }
