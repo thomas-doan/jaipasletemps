@@ -123,21 +123,9 @@ export class GameService implements IGameService {
             throw new Error('Game not found');
         }
 
-        if (game.current_question > game.total_question) {
-            await this.database.game.update({
-                where: { id: gameId },
-                data: {
-                    status: Status.FINISHED,
-                },
-            });
-
-            this.websocketService.getServer().to(gameId).emit('end', { message: 'Game over', score: game.score });
-            return;
-        }
-
         this.firstCorrectAnswer[gameId] = null;
 
-        console.log(`Fetching question for index: ${game.current_question}`);
+        console.log(`question index: ${game.current_question}`);
         const question = await this.questionService.getQuestionByIndexAssociateWithChoice(game.current_question);
         console.log('questionEncoursDanslaBoucle', question);
 
@@ -146,6 +134,10 @@ export class GameService implements IGameService {
         }
 
         this.websocketService.getServer().to(gameId).emit(WebSocketEvents.SHOW_NEXT_QUESTION, question);
+
+      setTimeout(async () => {
+   const scoreInstance = Score.getInstance().getScoreJsonFormated();
+          console.log(`Scores pour le jeu ${gameId}:`, scoreInstance);
 
         setTimeout(async () => {
             await this.database.game.update({
@@ -168,7 +160,8 @@ export class GameService implements IGameService {
 
                 this.websocketService.getServer().to(gameId).emit('end', { message: 'Game over', score: game.score });
             }
-        }, 30000);
+        }, 10000);
+      }, 30000);
     }
 
 
