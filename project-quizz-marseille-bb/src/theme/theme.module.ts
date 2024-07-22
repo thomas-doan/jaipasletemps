@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ThemeService } from './theme.service';
-import { ThemeController } from './theme.controller';
+import { ThemeService } from './services/theme.service';
+import { ThemeController } from './controllers/theme.controller';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
+  imports: [DatabaseModule],
   controllers: [ThemeController],
-  providers: [ThemeService],
+  providers: [
+    ThemeService,
+  ],
+  exports: [ThemeService],
 })
 export class ThemeModule {}

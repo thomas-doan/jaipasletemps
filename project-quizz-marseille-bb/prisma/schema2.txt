@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  MODO
+  ADMIN
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Status {
+  OPEN
+  IN_PROGRESS
+  FINISHED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  role      Role     @default(USER)
+  password  String
+  firstname String?
+  lastname  String?
+  players   Player[]
+
+  @@index([email])
+}
+
+model Player {
+  id                   String  @id @default(uuid())
+  name                 String
+  score                Int     @default(0)
+  currentQuestionIndex Int     @default(0)
+  disconnected         Boolean @default(false)
+  position             Int?
+  quizId               String?
+  quiz                 Quiz?   @relation(fields: [quizId], references: [id])
+  userId               String
+  user                 User    @relation(fields: [userId], references: [id])
+
+  @@index([quizId])
+  @@index([userId])
+}
+
+
+model Player {
+  id                   String  @id @default(uuid())
+  name                 String
+  score                Int     @default(0)
+  currentQuestionIndex Int     @default(0)
+  disconnected         Boolean @default(false)
+  position             Int?
+  quizId               String?
+  quiz                 Quiz?   @relation(fields: [quizId], references: [id])
+  userId               String
+  user                 User    @relation(fields: [userId], references: [id])
+
+  @@index([quizId])
+  @@index([userId])
+}
+
+model Game {
+}
+
+model Question {
+  id            String         @id @default(uuid())
+  text          String
+  choices       Json
+  correctAnswer String
+  type          String
+  themeId       String
+  theme         Theme          @relation(fields: [themeId], references: [id])
+  quizzes       QuizQuestion[]
+
+  @@index([themeId])
+}
+
+model Quiz {
+  id                   String         @id @default(uuid())
+  currentQuestionIndex Int            @default(0)
+  currentPhase         QuizPhase      @default(PHASE_ONE)
+  theme1Id             String?
+  theme2Id             String?
+  theme1               Theme?         @relation("Theme1", fields: [theme1Id], references: [id])
+  theme2               Theme?         @relation("Theme2", fields: [theme2Id], references: [id])
+  maxPlayers           Int
+  players              Player[]
+  questions            QuizQuestion[]
+
+  @@index([theme1Id])
+  @@index([theme2Id])
+}
+
+model QuizQuestion {
+  quizId     String
+  questionId String
+  quiz       Quiz     @relation(fields: [quizId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
+
+  @@id([quizId, questionId])
+}
+
+model Theme {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  questions Question[]
+  quizzes1  Quiz[]     @relation("Theme1")
+  quizzes2  Quiz[]     @relation("Theme2")
+
+  @@index([name])
+}

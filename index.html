@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ma page Socket.io</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"
+      integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <h1>Ma page Socket.io</h1>
+    <!-- Votre contenu HTML ici -->
+    <button id="enterRoom">Créer une room</button>
+    <div id="containerBtnLeave"></div>
+    <div id="displayRoom"></div>
+    <div id="userInRoom"></div>
+    <script>
+      const socket = io("http://localhost:3000/");
+      let currentGameId = null;
+
+      socket.on("connection", () => {
+        console.log("Connecté au serveur");
+      });
+
+      const button = document.getElementById("enterRoom");
+      const containerBtnLeave = document.getElementById("containerBtnLeave");
+      const leaveButton = document.createElement("button");
+      leaveButton.innerHTML = "Quitter la salle";
+      leaveButton.id = "leaveGameButton";
+      const displayRoom = document.getElementById("displayRoom");
+      const userInRoom = document.getElementById("userInRoom");
+
+      button.addEventListener("click", () => {
+        const gameId = `room-${(Math.random() + 1).toString(36).substring(7)}`;
+        currentGameId = gameId;
+        socket.emit("joinNewGame", {
+          gameId: gameId,
+          socketId: socket.id,
+        });
+      });
+
+      socket.on("newGameAvailable", (data) => {
+        console.log("New game available", data.gameId);
+        displayRoom.innerHTML =
+          '<button id="joinGameButton">Rejoindre la salle</button>';
+        const joinButton = document.getElementById("joinGameButton");
+        joinButton.onclick = () => {
+          currentGameId = data.gameId;
+          containerBtnLeave.appendChild(leaveButton);
+          socket.emit("create-room", { roomId: data.roomId });
+        };
+        joinButton.style.display = "block";
+      });
+
+      socket.on("players", (data) => {
+        console.log("Sockets in room", data);
+        userInRoom.innerHTML = `Il y a ${data.length} utilisateur(s) dans la salle`;
+      });
+
+      leaveButton.addEventListener("click", () => {
+        if (currentGameId) {
+          console.log("leaveGame", currentGameId);
+          socket.emit("leaveGame", {
+            gameId: currentGameId,
+            socketId: socket.id,
+          });
+        }
+        socket.on("disconnect", () => {
+        console.log("Connecté au serveur");
+      });
+      });
+    </script>
+  </body>
+</html>
