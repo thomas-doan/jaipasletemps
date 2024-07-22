@@ -9,7 +9,10 @@ export class QuizController {
 
   @Post()
   create(@Body() createQuizDto: CreateQuizDto) {
-    return this.quizService.create(createQuizDto);
+    console.log("quiz quiz")
+    return (
+      
+      this.quizService.create(createQuizDto));
   }
 
   @Get()
@@ -19,16 +22,16 @@ export class QuizController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.quizService.findOne(+id);
+    return this.quizService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto) {
-    return this.quizService.update(+id, updateQuizDto);
+    return this.quizService.update(id, updateQuizDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.quizService.remove(+id);
+    return this.quizService.remove(id);
   }
 }
