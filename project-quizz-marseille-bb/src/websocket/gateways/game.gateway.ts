@@ -40,11 +40,18 @@ export class GameGateway
     @SubscribeMessage(WebSocketEvents.CREATE_ROOM)
     handleCreateRoom(client: Socket, payload: any): void {
         this.websocketService.handleEvent(client, WebSocketEvents.CREATE_ROOM, payload);
+       // socket.join(data.data.quizId);
     }
 
     @SubscribeMessage(WebSocketEvents.JOIN_ROOM)
     handleJoinRoom(client: Socket, payload: any): void {
-        this.websocketService.handleEvent(client, WebSocketEvents.JOIN_ROOM, payload);
+       this.websocketService.handleEvent(client, WebSocketEvents.JOIN_ROOM, payload);
+
+      /*  socket.join(data.data.gameId);
+        const clients = this.server.sockets.adapter.rooms.get(data.data.gameId);
+        const socketIds = clients ? Array.from(clients) : [];
+
+        console.log(`Socket IDs in room ${data.data.gameId}:`, socketIds);*/
     }
 
     @SubscribeMessage(WebSocketEvents.START_GAME)

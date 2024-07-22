@@ -21,7 +21,12 @@ export class PlayerService implements IPlayerService {
         });
 
         const findPlayerInPlayerActivites = await this.database.playerActivites.findFirst({
-            where: { playerId: getPlayer.id },
+            where: {
+                AND :  [
+                    { gameId },
+                    { playerId: getPlayer.id },
+                ]
+            },
         });
 
         if (!findPlayerInPlayerActivites) {

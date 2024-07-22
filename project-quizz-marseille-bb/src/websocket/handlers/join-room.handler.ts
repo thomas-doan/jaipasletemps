@@ -9,6 +9,7 @@ export class JoinRoomHandler implements IGameEventsHandler {
     constructor(
         @Inject('IPlayerService') private readonly playerService: IPlayerService,
         @Inject('IGameService') private readonly gameService: IGameService,
+
     ) {}
 
 
