@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePlayerDto } from '../dto/create-player.dto';
 import { UpdatePlayerDto } from '../dto/update-player.dto';
-import {User} from "@prisma/client";
-import {IPlayerService} from "../interfaces/player.service.interface";
-
+import { User } from '@prisma/client';
+import { IPlayerService } from '../interfaces/player.service.interface';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
-export class PlayerService implements  IPlayerService {
-
+export class PlayerService implements IPlayerService {
+  constructor(private database: DatabaseService) {}
   async handleDisconnection(socketId: string): Promise<void> {
     // implémentation de la méthode
   }
   create(createPlayerDto: CreatePlayerDto) {
-    return 'This action adds a new player';
+    return this.database.player.create({
+      data: {
+        ...createPlayerDto,
+      },
+    });
   }
 
   findAll() {
@@ -31,7 +35,12 @@ export class PlayerService implements  IPlayerService {
     return `This action removes a #${id} player`;
   }
 
-  createUser(data: { email: string; password: string; firstname?: string; lastname?: string }): Promise<User> {
+  createUser(data: {
+    email: string;
+    password: string;
+    firstname?: string;
+    lastname?: string;
+  }): Promise<User> {
     return Promise.resolve(undefined);
   }
 

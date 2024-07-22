@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, use, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,41 +9,40 @@ import {
 import { QuizGame } from "./QuizGame";
 import { useSocket } from "@/contexts/Socket";
 import { GamePlayersScore } from "./GamePlayersScore";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "../ui/button";
 
 interface DialogGamesProps {
   open: boolean;
   setOpen: (value: boolean) => void;
-  quiz: any;
-  gameId: string;
 }
+
+type StepName = "form" | "lobby" | "quizz" | "end";
+
 export const DialogGames: FC<DialogGamesProps> = (props) => {
   const { socket } = useSocket();
-  const { open, setOpen, quiz, gameId } = props;
-  const [roomJoined, setRoomJoined] = useState(false);
-  const [playersList, setPlayersList] = useState<any>([]);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameData, setGameData] = useState<any>(null);
+  const { open, setOpen } = props;
+
+  const [step, setStep] = useState<StepName>("form");
+  const [quizList, setQuizList] = useState<any[]>([]);
+  const [selectedQuiz, setSelectedQuiz] = useState("");
 
   useEffect(() => {
-    socket.on("roomJoined", (data) => {
-      console.log("Room joined", data);
-      setRoomJoined(true);
-    });
-    socket.on("playersList", (data: any) => {
-      console.log("Player joined", data);
-      setPlayersList(data);
-    });
+    (async () => {
+      const resp = await fetch("http://localhost:3000/quiz");
+      const data = await resp.json();
+      console.log(data);
+      setQuizList(data);
+    })();
+  }, []);
 
-    socket.on("gameStarted", (data) => {
-      console.log("Game started", data);
-      setGameStarted(true);
-      setGameData(data);
-    });
-
-    setRoomJoined(false);
-  }, [socket]);
-
-  console.log("dialog quizz", quiz);
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -51,14 +50,30 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
           <DialogHeader>
             <DialogTitle>Quiz Game</DialogTitle>
             <DialogDescription>
-              <div className="flex flex-col">
-                {gameStarted && gameData && (
-                  <QuizGame quizData={quiz} gameId={gameId} />
-                )}
-                {playersList.length > 0 &&
-                  playersList.map((player: any) => (
-                    <GamePlayersScore key={player.id} players={player} />
-                  ))}
+              <div>
+                <article className="flex w-full justify-between">
+                  <Select>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Choisissez un quiz" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {quizList.map((quiz) => (
+                        <SelectItem
+                          key={quiz.id}
+                          value={quiz.id}
+                          onClick={(e) =>
+                            setSelectedQuiz(
+                              (e.target as HTMLInputElement).value
+                            )
+                          }
+                        >
+                          {quiz.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button></Button>
+                </article>
               </div>
             </DialogDescription>
           </DialogHeader>

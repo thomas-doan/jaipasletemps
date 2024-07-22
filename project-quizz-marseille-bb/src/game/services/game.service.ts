@@ -26,7 +26,7 @@ export class GameService implements IGameService {
     ) {
     }
 
-    async create(quizId: string, playerName: string, userId: string): Promise<Game> {
+    async create(quizId: string, userId: string): Promise<Game> {
         const quiz = await this.database.quiz.findUnique({
             where: { id: quizId },
         });

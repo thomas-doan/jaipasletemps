@@ -1,7 +1,7 @@
 import { Game } from '@prisma/client';
 
 export interface IGameService {
-    create(quizId: string, playerName: string, userId: string): Promise<Game>;
+    create(quizId: string, userId: string): Promise<Game>;
     startGame(gameId: string): Promise<void>;
     restartGame(gameId: string): Promise<void>;
     answerQuestion(gameId: string, playerId: string, answers: string[]): Promise<boolean>;
