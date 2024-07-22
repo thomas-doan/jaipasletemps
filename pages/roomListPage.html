@@ -89,7 +89,7 @@
             color: blue; /* Couleur de texte bleu pour Se connecter */
         }
 
-        #btnSubmit {
+        #btnSubmit, #btnRefresh, #btnSearchByRoom, #btnSearchByUser {
             background-color: rgb(54, 104, 230);
             color: white;
             padding: 14px 20px;
@@ -170,9 +170,17 @@
         </tr>
     </table>
     <div id="action-menu">
-        <button id="btnSubmit" type="submit" value="AddUser">Actualiser</button>
-        <button id="btnSubmit" type="submit" value="StartGame">Rechercher par nom de salle</button>
-        <button id="btnSubmit" type="submit" value="StartGame">Rechercher par nom d'utilisateur</button>
+        <button id="btnRefresh">Actualiser</button>
+        <button id="btnSearchByRoom">Rechercher par nom de salle</button>
+        <button id="btnSearchByUser">Rechercher par nom d'utilisateur</button>
     </div>
+
+    <script>
+        document.getElementById('btnRefresh').addEventListener('click', function() {
+            location.reload(); // Rafraîchit la page
+        });
+
+        // Ajoutez ici d'autres gestionnaires d'événements pour les autres boutons si nécessaire
+    </script>
 </body>
 </html>
