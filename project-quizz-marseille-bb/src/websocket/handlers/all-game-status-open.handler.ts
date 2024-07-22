@@ -13,10 +13,11 @@ export class AllGameStatusOpenHandler implements IGameEventsHandler {
     async handle(socket: Socket, data:{event: string; data: {}}): Promise<void> {
         //await this.gameService.closeChoice();
         let counter = 0;
-        const getAllGamesWithStatusOpen = this.gameService.getAllGamesWithStatusOpen();
+        const getAllGamesWithStatusOpen = await this.gameService.getAllGamesWithStatusOpen();
+        const gamesJson = JSON.stringify(getAllGamesWithStatusOpen);
         this.intervalId = setInterval(() => {
             counter++;
-            socket.emit('allGameStatusOpen', { message: `Event number: ${getAllGamesWithStatusOpen}` });
+            socket.emit('allGameStatusOpen', { message: `Event number: ${gamesJson}` });
         }, 1000);
     }
 
