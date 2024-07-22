@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: "Roboto", sans-serif;
+            background: rgb(7, 102, 152);
+            background: linear-gradient(-180deg, rgba(7, 102, 152, 1) 0%, rgba(63, 1, 162, 1) 100%);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(-180deg, rgba(7, 102, 152, 1) 0%, rgba(63, 1, 162, 1) 100%);
+            color: white;
+            padding: 10px 20px;
+        }
+
+        form {
+            border-radius: 20px;
+            padding: 20px;
+            width: 500px;
+            margin: auto;
+            margin-top: 50px;
+            background: white;
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 64px;
+            font-family: "Roboto", sans-serif;
+            color: white;
+            margin-top: 5%;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        button {
+            background-color: white;
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        button:hover, .nav-link:hover {
+            opacity: 0.8;
+        }
+
+        button:active, .nav-link:active {
+            background-color: teal;
+        }
+
+        input[type="text"] {
+            font-size: 20px;
+            border-radius: 5px;
+            font-family: "Roboto", sans-serif;
+            padding: 8px;
+            width: calc(100% - 16px); /* Ajustement pour le padding */
+            box-sizing: border-box; /* Inclure le padding dans la largeur */
+            height: 30px;
+            border-color: rgb(0, 140, 255);
+        }
+
+        label {
+            font-size: 20px;
+            font-weight: 600;
+            font-family: "Roboto", sans-serif;
+            text-align: left;
+            display: inline-block;
+            width: 70%; /* Alignement des labels */
+        }
+
+        .score-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .score-container input[type="text"] {
+            width: calc(100% - 40px); /* Ajustement pour le bouton */
+        }
+
+        .details-button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: rgb(0, 140, 255);
+            margin-left: 10px;
+        }
+
+        #btnUpdate {
+            background-color: rgb(54, 104, 230);
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 300px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        #btnUpdate:hover {
+            opacity: 0.8;
+        }
+
+        #btnUpdate:active {
+            background-color: teal;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h3>Quiz</h3>
+        <button id="btnParcourir">Parcourir</button>
+        <button id="btnCreerQuiz">Créer un quiz</button>
+        <a href="./homePage.html" id="btnSeConnecter"><button>Se connecter</button></a>
+    </header>
+    <h1>Profil</h1>
+
+    <form action="userProfile.php" method="post">
+        <h3>Modifier votre profil</h3>
+        <label for="pseudo">Pseudo</label>
+        <input type="text" name="pseudo" id="pseudo" required>
+        <br>
+        <label for="mail">Mail</label>
+        <input type="text" name="mail" id="mail" required>
+        <br>
+        <label for="level">Niveau</label>
+        <input type="text" name="level" id="level" required>
+        <br>
+        <label for="score">Score</label>
+        <div class="score-container">
+            <input type="text" name="score" id="score" required>
+            <button type="button" class="details-button" title="Détails" id="btnUpdate">
+                <i class="fa-plus"></i> Historique
+            </button>
+        </div>
+        <br>
+        <button type="submit" id="btnUpdate">Enregistrer</button>
+    </form>
+</body>
+</html>

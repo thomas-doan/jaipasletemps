@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Roboto", sans-serif;
+            background: rgb(7, 102, 152);
+            background: linear-gradient(-180deg, rgba(7, 102, 152, 1) 0%, rgba(63, 1, 162, 1) 100%);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between; /* Pour aligner les éléments aux extrémités */
+            align-items: center; /* Centrage vertical */
+            background: linear-gradient(-180deg, rgba(7,102,152,1) 0%, rgba(63,1,162,1) 100%);
+            color: white;
+            padding: 10px 20px;
+        }
+
+        form {
+            border-radius: 20px;
+            padding: 20px;
+            width: 500px;
+            margin: auto;
+            margin-top: 50px;
+            background: white;
+            text-align: center;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        button {
+            background-color: white;
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        button:hover, .nav-link:hover {
+            opacity: 0.8;
+        }
+
+        button:active, .nav-link:active {
+            background-color: teal;
+        }
+
+        input[type="text"], input[type="question"], input[type="premier_choix"], input[type="deuxieme_choix"], input[type="troisieme_choix"], input[type="quatrieme_choix"] {
+            font-size: 20px;
+            border-radius: 5px;
+            font-family: "Roboto", sans-serif;
+            padding: 8px;
+            width: calc(100% - 16px); /* Ajustement pour le padding */
+            box-sizing: border-box; /* Inclure le padding dans la largeur */
+            height: 30px;
+            border-color: rgb(0, 140, 255);
+        }
+
+        label {
+            font-size: 20px;
+            font-weight: 600;
+            font-family: "Roboto", sans-serif;
+            text-align: left;
+            display: inline-block;
+            width: 70%; /* Alignement des labels */
+        }
+
+        .choice-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .choice-container input[type="checkbox"] {
+            margin-left: 10px;
+        }
+
+        #btnParcourir {
+            margin-right: 10px; /* Marge à droite pour séparer des autres boutons */
+        }
+
+        #btnCreerQuiz {
+            margin-right: 10px; /* Marge à droite pour séparer des autres boutons */
+        }
+
+        #btnSeConnecter {
+            margin-left: 10px; /* Marge à gauche pour séparer du bord droit */
+            color: blue; /* Couleur de texte bleu pour Se connecter */
+        }
+
+        #btnSubmit {
+            background-color: rgb(54, 104, 230);
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 300px; /* Assurez-vous que les boutons ont la même largeur */
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none; /* Enlève le soulignement du lien */
+        }
+
+        #submitButton:hover {
+            background-color: rgb(54, 104, 230);
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 300px; /* Assurez-vous que les boutons ont la même largeur */
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none; /* Enlève le soulignement du lien */
+        }
+        
+        button:hover {
+            opacity: 0.8;
+        }
+        
+        button:active {
+            background-color: teal;
+        }
+    </style>
+    <title>Questions</title>
+</head>
+<body>
+    <header>
+        <h3>Quiz</h3>
+        <button id="btnParcourir">Parcourir</button>
+        <button id="btnCreerQuiz">Créer un quiz</button>
+        <a href="./homePage.html" id="btnSeConnecter"><button>Se connecter</button></a>
+    </header>
+
+    <!-- Autre contenu de votre page ici -->
+    <form id="registerForm" autocomplete="on">
+        <label for="question">Intitulé de la question</label><br>
+        <input type="question" id="question" name="name" autocomplete="question"><br>
+
+        <div class="choice-container">
+            <label for="premier_choix">Premier choix</label>
+            <input type="premier_choix" id="premier_choix" name="premier_choix" autocomplete="choix">
+            <input type="checkbox" id="bonne_reponse_1" name="bonne_reponse_1">
+        </div>
+
+        <div class="choice-container">
+            <label for="deuxieme_choix">Deuxième choix</label>
+            <input type="deuxieme_choix" id="deuxieme_choix" name="deuxieme_choix" autocomplete="choix">
+            <input type="checkbox" id="bonne_reponse_2" name="bonne_reponse_2">
+        </div>
+
+        <div class="choice-container">
+            <label for="troisieme_choix">Troisième choix</label>
+            <input type="troisieme_choix" id="troisieme_choix" name="troisieme_choix" autocomplete="choix">
+            <input type="checkbox" id="bonne_reponse_3" name="bonne_reponse_3">
+        </div>
+
+        <div class="choice-container">
+            <label for="quatrieme_choix">Quatrième choix</label>
+            <input type="quatrieme_choix" id="quatrieme_choix" name="quatrieme_choix" autocomplete="choix">
+            <input type="checkbox" id="bonne_reponse_4" name="bonne_reponse_4">
+        </div>
+       
+        <button id="btnSubmit" type="submit" value="Submit">Ajouter la question</button><br>
+        <a href="./homePage.html" id="btnReset">Réinitialiser</a>
+    </form>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche la soumission du formulaire
+            
+            // Récupère les valeurs des champs
+            var question = document.getElementById('question').value;
+            var first_answer = document.getElementById('premier_choix').value;
+            var second_answer = document.getElementById('deuxieme_choix').value;
+            var third_answer = document.getElementById('troisieme_choix').value;
+            var fourth_answer = document.getElementById('quatrieme_choix').value;
+
+            var good_answers = [];
+            if (document.getElementById('bonne_reponse_1').checked) good_answers.push(first_answer);
+            if (document.getElementById('bonne_reponse_2').checked) good_answers.push(second_answer);
+            if (document.getElementById('bonne_reponse_3').checked) good_answers.push(third_answer);
+            if (document.getElementById('bonne_reponse_4').checked) good_answers.push(fourth_answer);
+            
+            // Affiche les valeurs dans la console
+            console.log('Question:', question);
+            console.log('Premier choix:', first_answer);
+            console.log('Deuxième choix:', second_answer);
+            console.log('Troisième choix:', third_answer);
+            console.log('Quatrième choix:', fourth_answer);
+            console.log('Bonnes réponses:', good_answers);
+        });
+    </script>
+</body>
+</html>
