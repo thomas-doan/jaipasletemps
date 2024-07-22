@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { QuestionService } from './services/question.service';
 import { QuestionController } from './controllers/question.controller';
 import { DatabaseModule } from '../database/database.module';
+import {WebsocketModule} from "../websocket/websocket.module";
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, DatabaseModule, forwardRef(() => WebsocketModule)],
   controllers: [QuestionController],
   providers: [
     QuestionService,

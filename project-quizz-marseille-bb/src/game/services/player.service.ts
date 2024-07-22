@@ -1,58 +1,63 @@
-import { Injectable } from '@nestjs/common';
+import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { IPlayerService } from '../interfaces/player.service.interface';
-import { Player, User } from '@prisma/client';
+import { Player } from '@prisma/client';
+import {WebsocketService} from "../../websocket/services/websocket.service";
 
 @Injectable()
 export class PlayerService implements IPlayerService {
-  constructor(private database: DatabaseService) {}
+    constructor(private database: DatabaseService,
+                @Inject(forwardRef(() => WebsocketService))
+                private readonly websocketService: WebsocketService) {}
 
-  async addPlayer(gameId: string, playerId: string): Promise<Player> {
-    const player = await this.database.player.findUnique({
-      where: { id: playerId },
-    });
+    async addPlayer(gameId: string, playerName: string, userId: string): Promise<Player> {
 
-    if (!player) {
-      throw new Error(`Player with ID ${playerId} does not exist`);
+        const getUser = await this.database.user.findUnique({
+            where: { id: userId },
+        });
+        
+        const getPlayer = await this.database.player.findFirst({
+            where: { userId: getUser.id },
+        });
+
+        const findPlayerInPlayerActivites = await this.database.playerActivites.findFirst({
+            where: { playerId: getPlayer.id },
+        });
+
+        if (!findPlayerInPlayerActivites) {
+            await this.database.playerActivites.create({
+                data: {
+                    gameId,
+                    playerId: getPlayer.id,
+                },
+            });
+        }
+
+        // test pr voir les id dans la room
+
+        const server = this.websocketService.getServer();
+        const clients = server.sockets.adapter.rooms.get(gameId);
+        const socketIds = clients ? Array.from(clients) : [];
+
+        console.log(`Socket IDs in room ${gameId}:`, socketIds);
+
+
+        return getPlayer;
     }
 
-    const game = await this.database.game.findUnique({
-      where: { id: gameId },
-    });
+    async getPlayersInGame(gameId: string): Promise<Player[]> {
+        const activities = await this.database.playerActivites.findMany({
+            where: { gameId },
+            include: { player: true },
+        });
 
-    if (!game) {
-      throw new Error(`Game with ID ${gameId} does not exist`);
+        return activities.map(activity => activity.player);
     }
 
-    await this.database.playerActivites.create({
-      data: {
-        playerId,
-        gameId,
-      },
-    });
+    async handleDisconnection(playerId: string): Promise<void> {
+    }
 
-    return player;
-  }
-
-  async getPlayersInGame(gameId: string): Promise<(Player & { user: User })[]> {
-    const activities = await this.database.playerActivites.findMany({
-      where: { gameId },
-      include: {
-        player: {
-          include: {
-            user: true,
-          },
-        },
-      },
-    });
-
-    return activities.map((activity) => ({
-      ...activity.player,
-      user: activity.player.user,
-    }));
-  }
-
-  async handleDisconnection(playerId: string): Promise<void> {}
-
-  async handleReconnection(playerId: string): Promise<void> {}
+    async handleReconnection(playerId: string): Promise<void> {
+    }
+    
 }

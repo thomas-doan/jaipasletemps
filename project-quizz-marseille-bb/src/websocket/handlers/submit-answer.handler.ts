@@ -1,48 +1,36 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import { IGameEventsHandler } from '../interfaces/game-events.handler.interface';
 import { IGameService } from '../../game/interfaces/game.service.interface';
-import { Server, Socket } from 'socket.io';
-import { IQuestionService } from 'src/game/interfaces/question.service.interface';
-import { IScoreService } from 'src/game/interfaces/score.service.interface';
+import { Socket } from 'socket.io';
+import {GameService} from "../../game/services/game.service";
 
 @Injectable()
 export class SubmitAnswerHandler implements IGameEventsHandler {
-  constructor(
-    @Inject('IGameService')
-    private readonly gameService: IGameService,
-    @Inject('IQuestionService')
-    private readonly questionService: IQuestionService,
-    @Inject('IScoreService')
-    private readonly scoreService: IScoreService,
-  ) {}
+    constructor(
+        @Inject(forwardRef(() => 'IGameService'))
+        private readonly gameService: GameService,
+    ) {}
 
-  async handle(
-    socket: Socket,
-    data: {
-      gameId: string;
-      playerId: string;
-      answerText: string;
-      questionId: string;
-    },
-    server: Server,
-  ): Promise<void> {
-    const { gameId, playerId, answerText, questionId } = data;
+    async handle(socket: Socket, data: { event: string; data: { gameId: string; playerId: string; answers: string[] } }): Promise<void> {
+        const { gameId, playerId, answers } = data.data;
 
-    if (!gameId || !playerId || !answerText || !questionId) {
-      console.error('Invalid data received:', data);
-      socket.emit('error', 'Invalid data received submit answer');
-      return;
-    }
+        // Vérifiez si une réponse correcte a déjà été enregistrée pour cette question
+        if (!this.gameService.firstCorrectAnswer[gameId]) {
+            console.log('Checking answer'+playerId);
+            const isCorrect = await this.gameService.answerQuestion(gameId, playerId, answers);
 
-    const questionAnswer =
-      await this.questionService.getCorrectAnswer(questionId);
+            if (isCorrect) {
+                // Enregistrez la première réponse correcte pour ce jeu
+                this.gameService.firstCorrectAnswer[gameId] = playerId;
+                console.log('Rep valide par playerId : ' + playerId);
 
-    server.to(gameId).emit('correctAnswer', questionAnswer.correctAnswer);
-
-    if (questionAnswer.correctAnswer == answerText) {
-      await this.scoreService.updateScore(gameId, playerId);
-      const game = this.scoreService.getScoreGame(gameId);
-      server.to(gameId).emit('updatedScore', game);
-    }
-  }
-}
+                socket.emit('answerResult', { correct: true, playerId });
+                socket.to(gameId).emit('playerScored', { playerId });
+            } else {
+                socket.emit('answerResult', { correct: false });
+            }
+        } else {
+            console.log('Question already answered correctly'+playerId);
+            socket.emit('answerResult', { correct: false, message: 'Question already answered correctly' });
+        }
+    }}

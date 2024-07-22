@@ -21,6 +21,7 @@ CREATE TABLE `Player` (
     `elo` INTEGER NOT NULL DEFAULT 0,
     `userId` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `Player_id_key`(`id`),
     INDEX `Player_name_idx`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -49,6 +50,7 @@ CREATE TABLE `Game` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Game_id_key`(`id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -73,6 +75,7 @@ CREATE TABLE `HistoryGame` (
     `updatedAt` DATETIME(3) NOT NULL,
     `quizId` VARCHAR(191) NULL,
 
+    UNIQUE INDEX `HistoryGame_id_key`(`id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -87,6 +90,7 @@ CREATE TABLE `Quiz` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Quiz_id_key`(`id`),
     INDEX `Quiz_name_idx`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -98,6 +102,7 @@ CREATE TABLE `Question` (
     `correctAnswer` VARCHAR(191) NOT NULL,
     `themeId` VARCHAR(191) NULL,
 
+    UNIQUE INDEX `Question_id_key`(`id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -115,6 +120,7 @@ CREATE TABLE `Answer` (
     `text` VARCHAR(191) NOT NULL,
     `questionId` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `Answer_id_key`(`id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -124,6 +130,7 @@ CREATE TABLE `Theme` (
     `name` VARCHAR(191) NOT NULL,
     `description` TEXT NOT NULL,
 
+    UNIQUE INDEX `Theme_id_key`(`id`),
     UNIQUE INDEX `Theme_name_key`(`name`),
     INDEX `Theme_name_idx`(`name`),
     PRIMARY KEY (`id`)
@@ -145,6 +152,7 @@ CREATE TABLE `Joker` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Joker_id_key`(`id`),
     UNIQUE INDEX `Joker_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

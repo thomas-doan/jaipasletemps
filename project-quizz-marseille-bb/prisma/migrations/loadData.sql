@@ -14,6 +14,10 @@ INSERT INTO Question (id, text, correctAnswer, themeId) VALUES
                                                             ('880e8400-e29b-41d4-a716-446655440000', 'What is the capital of France?', 'Paris', NULL),
                                                             ('880e8400-e29b-41d4-a716-446655440001', 'What is 2 + 2?', '4', NULL);
 
+INSERT INTO QuizQuestion (quizId, questionId) VALUES
+                                              ('770e8400-e29b-41d4-a716-446655440000', '880e8400-e29b-41d4-a716-446655440000'),
+                                              ('770e8400-e29b-41d4-a716-446655440000', '880e8400-e29b-41d4-a716-446655440001');
+
 INSERT INTO Answer (id, text, questionId) VALUES
                                               ('990e8400-e29b-41d4-a716-446655440000', 'Paris', '880e8400-e29b-41d4-a716-446655440000'),
                                               ('990e8400-e29b-41d4-a716-446655440001', 'London', '880e8400-e29b-41d4-a716-446655440000'),

@@ -1,15 +1,17 @@
 // game/game.module.ts
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { GameService } from './services/game.service';
 import { DatabaseModule } from '../database/database.module';
 import { PlayerModule } from '../player/player.module';
 import { QuestionService } from '../question/services/question.service';
 import { ScoreService } from './services/score.service';
-import { PlayerService } from './services/player.service';
-import { QuestionModule } from 'src/question/question.module';
+import {PlayerService} from "./services/player.service";
+import {WebsocketModule} from "../websocket/websocket.module";
+
 
 @Module({
-  imports: [DatabaseModule, PlayerModule, QuestionModule],
+  imports: [DatabaseModule, forwardRef(() => WebsocketModule)],
+
   providers: [
     {
       provide: 'IGameService',
@@ -28,9 +30,14 @@ import { QuestionModule } from 'src/question/question.module';
       useClass: ScoreService,
     },
     GameService,
+      PlayerService,
     QuestionService,
     ScoreService,
   ],
-  exports: ['IGameService', 'IPlayerService', 'IScoreService'],
+  exports: ['IGameService', 'IPlayerService',
+    GameService,
+    PlayerService,
+    ScoreService,
+    QuestionService],
 })
 export class GameModule {}

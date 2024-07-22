@@ -7,7 +7,8 @@ import { PlayerModule } from './player/player.module';
 import { QuestionModule } from './question/question.module';
 import { ThemeModule } from './theme/theme.module';
 import { WebsocketModule } from './websocket/websocket.module';
-import { QuizModule } from './quiz/quiz.module';
+import { SharedModule } from './shared/shared.module';
+
 
 
 @Module({
@@ -16,11 +17,12 @@ import { QuizModule } from './quiz/quiz.module';
     DatabaseModule,
     AuthModule,
     GameModule,
-    QuizModule,
     PlayerModule,
     QuestionModule,
     ThemeModule,
     WebsocketModule,
+    SharedModule,
+
   ],
 })
 export class AppModule {}
