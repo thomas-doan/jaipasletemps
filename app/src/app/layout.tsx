@@ -4,8 +4,8 @@ import "./globals.css";
 
 import { cn } from "@/lib/utils";
 import { SocketProvider } from "@/contexts/Socket";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { Header } from "@/components/assets/header";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { Header } from "@/components/assets/Header";
 
 const fontSans = FontSans({
   subsets: ["latin"],

@@ -4,10 +4,6 @@ import * as jwt from "jsonwebtoken";
 
 const AuthContext = createContext<any>(null);
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
-
 export function AuthProvider({ children }: any) {
   interface User {
     id?: string;
@@ -91,9 +87,16 @@ export function AuthProvider({ children }: any) {
 
   // Autres fonctions d'authentification
 
-  return (
-    <AuthContext.Provider value={{ user, login, registerContext }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const value = {
+    user,
+    login,
+    logout,
+    registerContext,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
