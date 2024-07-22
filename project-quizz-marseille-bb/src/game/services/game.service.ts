@@ -8,6 +8,7 @@ import {Game, Status} from '@prisma/client';
 import {WebsocketService} from "../../websocket/services/websocket.service";
 import {Score} from "../model/score.model";
 import {WebSocketEvents} from "../../websocket/enum/websocket-events.enum";
+import {Server} from "socket.io";
 
 @Injectable()
 export class GameService implements IGameService {
@@ -240,5 +241,22 @@ export class GameService implements IGameService {
                 },
             },
         });
+    }
+
+    async getActiveRooms(): Promise<string[]> {
+        const server = this.websocketService.getServer();
+        const rooms = server.sockets.adapter.rooms;
+        const activeRooms = [];
+
+        for (const [roomId, room] of rooms.entries()) {
+            if (
+                room.size > 1 ||
+                (room.size === 1 && !server.sockets.sockets.has(roomId))
+            ) {
+                activeRooms.push(roomId);
+            }
+        }
+
+        return activeRooms;
     }
 }

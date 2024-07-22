@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import {Injectable, Inject} from '@nestjs/common';
 import { IGameEventsHandler } from '../interfaces/game-events.handler.interface';
 import { IGameService } from '../../game/interfaces/game.service.interface';
 import { Socket } from 'socket.io';
@@ -30,6 +30,11 @@ export class CreateRoomHandler implements IGameEventsHandler {
         console.log(`Socket ${socket.id} joined room ${game.id}`);
         socket.emit('roomCreated', { roomId: game.id });
         console.log(`Emitted roomCreated event with roomId ${game.id}`);
+
+
+        const activeRooms = await this.gameService.getActiveRooms();
+        socket.broadcast.emit('activeRooms', activeRooms);
+
       } catch (err) {
         console.error(`Error joining room ${game.id}:`, err);
         socket.emit('error', 'Error joining room');

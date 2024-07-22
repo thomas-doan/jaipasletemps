@@ -11,6 +11,6 @@ export interface IGameService {
     findGameById(gameId: string): Promise<Game>;
     checkAnswer(game: Game, answers: string[]): Promise<boolean>;
     findGameWithQuizById(gameId: string): Promise<Game & { quiz: { maxPlayers: number } }>;
-
+    getActiveRooms(): Promise<any>;
     firstCorrectAnswer: { [gameId: string]: string | null };
 }
