@@ -11,6 +11,7 @@ import { SubmitAnswerHandler } from '../handlers/submit-answer.handler';
 import { EndGameHandler } from '../handlers/end-game.handler';
 import { RestartGameHandler } from '../handlers/restart-game.handler';
 import { CloseChoiceHandler } from '../handlers/close-choice.handler';
+import {AllGameStatusOpenHandler} from "../handlers/all-game-status-open.handler";
 
 @Injectable()
 export class WebsocketService implements OnModuleInit {
@@ -28,6 +29,7 @@ export class WebsocketService implements OnModuleInit {
         private readonly endGameHandler: EndGameHandler,
         private readonly restartGameHandler: RestartGameHandler,
         private readonly closeChoiceHandler: CloseChoiceHandler,
+        private readonly allGameStatusOpenHandler: AllGameStatusOpenHandler,
     ) {
         this.handlers = new Map<string, any>([
             ['connection', this.connectionHandler],
@@ -40,6 +42,7 @@ export class WebsocketService implements OnModuleInit {
             ['endGame', this.endGameHandler],
             ['restartGame', this.restartGameHandler],
             ['closeChoice', this.closeChoiceHandler],
+            ['allGameStatusOpen', this.allGameStatusOpenHandler],
         ]);
     }
 

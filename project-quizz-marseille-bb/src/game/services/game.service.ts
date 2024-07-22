@@ -229,6 +229,12 @@ export class GameService implements IGameService {
         return true;
     }
 
+    async getAllGamesWithStatusOpen(): Promise<Game[]> {
+        return this.database.game.findMany({
+            where: { status: Status.OPEN },
+        });
+    }
+
     async findGameWithQuizById(gameId: string): Promise<(Game & { quiz: { maxPlayers: number } }) | null> {
         return this.database.game.findUnique({
             where: { id: gameId },

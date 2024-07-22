@@ -7,10 +7,17 @@ import { QuestionService } from '../question/services/question.service';
 import { ScoreService } from './services/score.service';
 import {PlayerService} from "./services/player.service";
 import {WebsocketModule} from "../websocket/websocket.module";
+import {ScheduleModule} from "@nestjs/schedule";
+import {GameController} from "./controllers/game.controller";
 
 
 @Module({
-  imports: [DatabaseModule, forwardRef(() => WebsocketModule)],
+  imports: [DatabaseModule, forwardRef(() => WebsocketModule),
+    ScheduleModule.forRoot(),],
+    controllers: [
+      GameController,
+
+    ],
 
   providers: [
     {

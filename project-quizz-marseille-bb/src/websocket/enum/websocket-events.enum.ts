@@ -8,4 +8,5 @@ export enum WebSocketEvents {
     RESTART_GAME = 'restartGame',
     SHOW_ANSWER = 'showAnswer',
     CLOSE_CHOICE = 'closeChoice',
+    ALL_GAME_STATUS_OPEN = 'allGameStatusOpen',
 }
