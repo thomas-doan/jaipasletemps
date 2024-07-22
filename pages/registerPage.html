@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <title>Register Page</title>
+
+    <style>
+        body {
+            font-family: "Roboto", sans-serif;
+            background: rgb(7, 102, 152);
+            background: linear-gradient(-180deg, rgba(7, 102, 152, 1) 0%, rgba(63, 1, 162, 1) 100%);
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 64px;
+            color: rgb(54, 104, 230);
+            margin-top: 5%;
+        }
+
+        form {
+            border-radius: 20px;
+            padding: 20px;
+            width: 350px;
+            margin: auto;
+            margin-top: 50px;
+            background: white;
+            text-align: center;
+        }
+
+        button, .nav-link {
+            background-color: rgb(54, 104, 230);
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 300px; /* Assurez-vous que les boutons ont la même largeur */
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none; /* Enlève le soulignement du lien */
+        }
+
+        button:hover, .nav-link:hover {
+            opacity: 0.8;
+        }
+
+        button:active, .nav-link:active {
+            background-color: teal;
+        }
+
+        input {
+            font-size: 20px;
+            border-radius: 5px;
+            font-family: "Roboto", sans-serif;
+            padding: 8px;
+            width: calc(100% - 16px); /* Ajustement pour le padding */
+            box-sizing: border-box; /* Inclure le padding dans la largeur */
+            height: 30px;
+            border-color: rgb(0, 140, 255);
+        }
+
+        label {
+            font-size: 20px;
+            font-weight: 600;
+            font-family: "Roboto", sans-serif;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz</h1>
+    <form id="registerForm" autocomplete="on">
+        <label for="first_name">Prénom</label><br>
+        <input type="text" id="first_name" name="first_name" autocomplete="name"><br>
+        <label for="last_name">Nom</label><br>
+        <input type="text" id="last_name" name="last_name" autocomplete="family-name"><br>
+        <label for="email">Adresse email</label><br>
+        <input type="email" id="email" name="email" autocomplete="email"><br>
+        <label for="password">Mot de passe</label><br>
+        <input type="password" id="password" name="password"><br>
+        <label for="confirm_password">Confirmer votre mot de passe</label><br>
+        <input type="password" id="confirm_password" name="confirm_password"><br>
+        <button id="bt" type="submit" value="Submit">S'enregistrer</button><br>
+        <a href="./homePage.html" class="nav-link">Page de connexion</a>
+    </form>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche la soumission du formulaire
+    
+            // Récupère les valeurs des champs
+            var first_name = document.getElementById('first_name').value;
+            var last_name = document.getElementById('last_name').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var confirm_password = document.getElementById('confirm_password').value;
+    
+            // Validation
+            if (!validateEmail(email)) {
+                alert("Adresse email invalide.");
+                return;
+            }
+    
+            if (!validatePassword(password)) {
+                alert("Le mot de passe doit contenir au moins 8 caractères dont un chiffre.");
+                return;
+            }
+    
+            if (password !== confirm_password) {
+                alert("Les mots de passe ne correspondent pas.");
+                return;
+            }
+    
+            // Affiche les valeurs dans la console
+            console.log('Prénom:', first_name);
+            console.log('Nom:', last_name);
+            console.log('Email:', email);
+            console.log('Mot de passe:', password);
+            console.log('Confirmer mot de passe:', confirm_password);
+    
+            // Envoie les données au serveur
+            // Vous pouvez utiliser fetch ou axios pour envoyer les données
+            fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    first_name: first_name,
+                    last_name: last_name,
+                    email: email,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Réponse du serveur:', data);
+                // Traitez la réponse du serveur ici
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+        });
+    
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    
+        function validatePassword(password) {
+            const re = /^(?=.*\d)[A-Za-z\d]{8,}$/;
+            return re.test(password);
+        }
+    </script>
+    
+</body>
+</html>
