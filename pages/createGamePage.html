@@ -17,9 +17,9 @@
 
         header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(-180deg, rgba(7, 102, 152, 1) 0%, rgba(63, 1, 162, 1) 100%);
+            justify-content: space-between; /* Pour aligner les éléments aux extrémités */
+            align-items: center; /* Centrage vertical */
+            background: linear-gradient(-180deg, rgba(7,102,152,1) 0%, rgba(63,1,162,1) 100%);
             color: white;
             padding: 10px 20px;
         }
@@ -88,7 +88,6 @@
             margin-left: 10px; /* Marge à gauche pour séparer du bord droit */
             color: blue; /* Couleur de texte bleu pour Se connecter */
         }
-
         #btnSubmit {
             background-color: rgb(54, 104, 230);
             color: white;
@@ -104,41 +103,31 @@
             display: inline-block;
             text-decoration: none; /* Enlève le soulignement du lien */
         }
-
-        #btnSubmit:hover {
+        #submitButton:hover {
+            background-color: rgb(54, 104, 230);
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 300px; /* Assurez-vous que les boutons ont la même largeur */
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none; /* Enlève le soulignement du lien */
+        }
+        
+        button:hover {
             opacity: 0.8;
         }
-
-        #btnSubmit:active {
+        
+        button:active {
             background-color: teal;
-        }
-
-        table {
-            width: 100%;
-            background-color: white;
-            margin-top: 50px;
-            text-align: center;
-            border-collapse: collapse; /* Pour éviter les doubles bordures */
-        }
-
-        table, th, td {
-            border: 1px solid black;
-        }
-
-        th {
-            background-color: teal;
-            color: white;
-        }
-
-        /* Correction du sélecteur et centrage des boutons */
-        #action-menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
         }
     </style>
-    <title>Lobby</title>
+    <title>Créer une partie</title>
 </head>
 <body>
     <header>
@@ -149,30 +138,30 @@
     </header>
 
     <!-- Autre contenu de votre page ici -->
-    <table>
-        <tr>
-            <th>Nom de la room</th>
-            <th>Créateur</th>
-            <th>Disponibilité</th>
-            <th>Statut</th>
-        </tr>
-        <tr>
-            <td>Bataille de cerveaux</td>
-            <td>JohnDoe123</td>
-            <td>2/4</td>
-            <td>En attente de joueurs</td>
-        </tr>
-        <tr>
-            <td>Question pour un champion</td>
-            <td>JaneDoe99</td>
-            <td>3/3</td>
-            <td>Partie en cours</td>
-        </tr>
-    </table>
-    <div id="action-menu">
-        <button id="btnSubmit" type="submit" value="AddUser">Actualiser</button>
-        <button id="btnSubmit" type="submit" value="StartGame">Rechercher par nom de salle</button>
-        <button id="btnSubmit" type="submit" value="StartGame">Rechercher par nom d'utilisateur</button>
-    </div>
+    <form id="registerForm" autocomplete="on">
+        <label for="theme">Sélectionnez un thème</label><br>
+        <input type="theme" id="name" name="theme" autocomplete="name"><br>
+        <label for="quiz_theme">Sélectionnez un quiz</label><br>
+        <input type="quiz_theme" id="quiz_theme" name="quiz_theme"><br>
+        <!-- <label for="number">Nombre joueur max</label><br>
+        <input type="number" id="number" name="number" autocomplete="name"><br> -->
+        <label for="player_capacity">Nombre de joueurs</label><br>
+        <input type="number" id="player_capacity" name="player_capacity"><br>
+        <label for="time">Temps imparti</label><br>
+        <input type="time" id="time" name="time"><br>
+        <label for="question_number">Nombre de questions</label><br>
+        <input type="radio" id="difficulty" name="difficulty">10</input>
+        <input type="radio" id="difficulty" name="difficulty">20</input>
+        <input type="radio" id="difficulty" name="difficulty">30</input><br>
+        <label for="difficulty">Sélectionnez le mode de difficulté</label><br>
+        <input type="radio" id="difficulty" name="difficulty">Facile</input>
+        <input type="radio" id="difficulty" name="difficulty">Moyen</input>
+        <input type="radio" id="difficulty" name="difficulty">Difficile</input><br>
+        <label for="joker_number">Nombre de jokers</label><br>
+        <input type="number" id="joker_number" name="joker_number"><br>
+        <button id="btnSubmit" type="submit" value="Submit">Créer la partie</button><br>
+        <a>Réinitiatliser</a>
+    </form>
+
 </body>
 </html>
