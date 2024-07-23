@@ -57,6 +57,11 @@ export class GameGateway
         this.websocketService.handleEvent(client, WebSocketEvents.SHOW_NEXT_QUESTION, payload);
     }
 
+    @SubscribeMessage(WebSocketEvents.ALL_GAME_STATUS_OPEN)
+    handleShowAllGameStatusOpen(client: Socket, payload: any): void {
+        this.websocketService.handleEvent(client, WebSocketEvents.ALL_GAME_STATUS_OPEN, payload);
+    }
+
     @SubscribeMessage(WebSocketEvents.SUBMIT_ANSWER)
     handleSubmitAnswer(client: Socket, payload: any): void {
         this.websocketService.handleEvent(client, WebSocketEvents.SUBMIT_ANSWER, payload);

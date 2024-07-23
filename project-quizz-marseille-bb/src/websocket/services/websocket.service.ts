@@ -11,6 +11,7 @@ import { SubmitAnswerHandler } from '../handlers/submit-answer.handler';
 import { EndGameHandler } from '../handlers/end-game.handler';
 import { RestartGameHandler } from '../handlers/restart-game.handler';
 import { CloseChoiceHandler } from '../handlers/close-choice.handler';
+import {AllGameStatusOpenHandler} from "../handlers/all-game-status-open.handler";
 
 @Injectable()
 export class WebsocketService implements OnModuleInit {
@@ -21,6 +22,7 @@ export class WebsocketService implements OnModuleInit {
         private readonly connectionHandler: ConnectionHandler,
         private readonly disconnectionHandler: DisconnectionHandler,
         private readonly createRoomHandler: CreateRoomHandler,
+        private readonly allGameStatusOpenHandler: AllGameStatusOpenHandler,
         private readonly joinRoomHandler: JoinRoomHandler,
         private readonly startGameHandler: StartGameHandler,
         private readonly showNextQuestionHandler: ShowNextQuestionHandler,
@@ -33,6 +35,7 @@ export class WebsocketService implements OnModuleInit {
             ['connection', this.connectionHandler],
             ['disconnect', this.disconnectionHandler],
             ['createRoom', this.createRoomHandler],
+            ['allGameStatusOpen', this.allGameStatusOpenHandler],
             ['joinRoom', this.joinRoomHandler],
             ['startGame', this.startGameHandler],
             ['showNextQuestion', this.showNextQuestionHandler],

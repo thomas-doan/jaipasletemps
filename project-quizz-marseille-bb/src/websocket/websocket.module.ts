@@ -12,6 +12,7 @@ import { EndGameHandler } from './handlers/end-game.handler';
 import { RestartGameHandler } from './handlers/restart-game.handler';
 import { CloseChoiceHandler } from './handlers/close-choice.handler';
 import { WebsocketService } from './services/websocket.service';
+import {AllGameStatusOpenHandler} from "./handlers/all-game-status-open.handler";
 
 @Module({
   imports: [forwardRef(() => GameModule)],
@@ -28,6 +29,7 @@ import { WebsocketService } from './services/websocket.service';
     EndGameHandler,
     RestartGameHandler,
     CloseChoiceHandler,
+    AllGameStatusOpenHandler,
   ],
   exports: [WebsocketService],
 })

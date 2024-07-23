@@ -45,22 +45,7 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
     const [playersList, setPlayersList] = useState<any[]>([]);
 
     const isStepActive = (stepName: StepName) => activeStep === stepName;
-    const nextStep = () => {
-        const currentStepIndex = steps.findIndex(
-            (step) => step.name === activeStep
-        );
-        if (currentStepIndex < steps.length - 1) {
-            setActiveStep(steps[currentStepIndex + 1].name as StepName);
-        }
-    };
-    const previousStep = () => {
-        const currentStepIndex = steps.findIndex(
-            (step) => step.name === activeStep
-        );
-        if (currentStepIndex > 0) {
-            setActiveStep(steps[currentStepIndex - 1].name as StepName);
-        }
-    };
+
     useEffect(() => {
         socket.on('roomCreated', (data) => {
             console.log('roomCreated', data);

@@ -19,13 +19,13 @@ function GamePage() {
     const [activeStep, setActiveStep] = useState<StepName>("form");
 
     useEffect(() => {
-        socket.on("activeRooms", (data) => {
-            console.log("activeRooms", data);
-            setActiveRoomsList(data);
+        socket.on("allGameStatusOpen", (data) => {
+            console.log("allGameStatusOpen", data);
+            setActiveRoomsList(data.message);
         });
 
         return () => {
-            socket.off("activeRooms");
+            socket.off("allGameStatusOpen");
         };
     }, [socket]);
 

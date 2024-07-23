@@ -8,7 +8,6 @@ import {Game, Status} from '@prisma/client';
 import {WebsocketService} from "../../websocket/services/websocket.service";
 import {Score} from "../model/score.model";
 import {WebSocketEvents} from "../../websocket/enum/websocket-events.enum";
-import {Server} from "socket.io";
 
 @Injectable()
 export class GameService implements IGameService {
@@ -72,21 +71,6 @@ export class GameService implements IGameService {
         return game;
     }
 
-    /*    private async initializeGameQuestion(quizId: string) {
-            const quizQuestions = await this.database.quizQuestion.findMany({
-                where: {quizId},
-                include: {question: true},
-            });
-
-            if (quizQuestions.length === 0) {
-                throw new Error('Quiz has no questions');
-            }
-
-            const questions = quizQuestions.map(q => q.question);
-            const gameQuestionsInstance = GameQuestions.getInstance(questions);
-            return gameQuestionsInstance;
-        }*/
-
     async startGame(gameId: string): Promise<void> {
         const game = await this.findGameWithQuizById(gameId);
         if (!game) {
@@ -112,55 +96,6 @@ export class GameService implements IGameService {
         await this.showNextQuestion(gameId);
     }
 
-    /*    async showNextQuestion(gameId: string): Promise<void> {
-            console.log('showNextQuestion');
-            let game = await this.findGameById(gameId);
-            if (!game) {
-                throw new Error('Game not found');
-            }
-
-            this.firstCorrectAnswer[gameId] = null;
-
-            console.log(`question index: ${game.current_question}`);
-            const question = await this.questionService.getQuestionByIndexAssociateWithChoice(game.current_question);
-            console.log('questionEncoursDanslaBoucle', question);
-
-            if (!question) {
-                throw new Error('Question not found');
-            }
-
-
-            setTimeout(async () => {
-                const scoreInstance = Score.getInstance().getScoreJsonFormated();
-                console.log(`Scores pour le jeu ${gameId}:`, scoreInstance);
-
-                this.websocketService.getServer().to(gameId).emit(WebSocketEvents.SHOW_SCORE, scoreInstance);
-                await this.emitGame(gameId, question);
-
-                setTimeout(async () => {
-                    await this.database.game.update({
-                        where: {id: gameId},
-                        data: {
-                            current_question: game.current_question + 1,
-                        },
-                    });
-
-                    game = await this.findGameById(gameId);
-                    if (game && game.current_question <= game.total_question) {
-                        this.showNextQuestion(gameId);
-                    } else {
-                        await this.database.game.update({
-                            where: {id: gameId},
-                            data: {
-                                status: Status.FINISHED,
-                            },
-                        });
-
-                        this.websocketService.getServer().to(gameId).emit('end', {message: 'Game over', score: game.score});
-                    }
-                }, 10000);
-            }, 30000);
-        }*/
 
     async showNextQuestion(gameId: string): Promise<void> {
         let game = await this.findGameById(gameId);
@@ -281,6 +216,13 @@ export class GameService implements IGameService {
     async checkAnswer(game: Game, answers: string[]): Promise<boolean> {
         // Implementation for checking answer
         return true;
+    }
+
+
+    async getAllGamesWithStatusOpen(): Promise<Game[]> {
+        return this.database.game.findMany({
+            where: { status: Status.OPEN },
+        });
     }
 
     async findGameWithQuizById(gameId: string): Promise<(Game & { quiz: { maxPlayers: number } }) | null> {
