@@ -88,7 +88,6 @@ export class GameService implements IGameService {
         }*/
 
     async startGame(gameId: string): Promise<void> {
-        const server = this.websocketService.getServer();
         const game = await this.findGameWithQuizById(gameId);
         if (!game) {
             throw new Error('Game not found');
@@ -110,57 +109,60 @@ export class GameService implements IGameService {
             },
         });
 
-
         await this.showNextQuestion(game.id);
     }
 
-    async showNextQuestion(gameId: string): Promise<void> {
-        console.log('showNextQuestion');
-        let game = await this.findGameById(gameId);
-        if (!game) {
-            throw new Error('Game not found');
-        }
+     async showNextQuestion(gameId: string): Promise<void> {
+            console.log('showNextQuestion');
+            let game = await this.findGameById(gameId);
+            if (!game) {
+                throw new Error('Game not found');
+            }
 
-        this.firstCorrectAnswer[gameId] = null;
+            this.firstCorrectAnswer[gameId] = null;
 
-        console.log(`question index: ${game.current_question}`);
-        const question = await this.questionService.getQuestionByIndexAssociateWithChoice(game.current_question);
-        console.log('questionEncoursDanslaBoucle', question);
+            console.log(`question index: ${game.current_question}`);
+            const question = await this.questionService.getQuestionByIndexAssociateWithChoice(game.current_question);
+            console.log('questionEncoursDanslaBoucle', question);
 
-        if (!question) {
-            throw new Error('Question not found');
-        }
+            if (!question) {
+                throw new Error('Question not found');
+            }
 
-        this.websocketService.getServer().to(gameId).emit(WebSocketEvents.SHOW_NEXT_QUESTION, question);
+            this.websocketService.getServer().to(gameId).emit(WebSocketEvents.SHOW_NEXT_QUESTION, question);
 
-        setTimeout(async () => {
-            const scoreInstance = Score.getInstance().getScoreJsonFormated();
-            console.log(`Scores pour le jeu ${gameId}:`, scoreInstance);
 
             setTimeout(async () => {
-                await this.database.game.update({
-                    where: {id: gameId},
-                    data: {
-                        current_question: game.current_question + 1,
-                    },
-                });
+                const scoreInstance = Score.getInstance().getScoreJsonFormated();
+                console.log(`Scores pour le jeu ${gameId}:`, scoreInstance);
 
-                game = await this.findGameById(gameId);
-                if (game && game.current_question <= game.total_question) {
-                    this.showNextQuestion(gameId);
-                } else {
+                this.websocketService.getServer().to(gameId).emit(WebSocketEvents.SHOW_SCORE, scoreInstance);
+
+                setTimeout(async () => {
                     await this.database.game.update({
                         where: {id: gameId},
                         data: {
-                            status: Status.FINISHED,
+                            current_question: game.current_question + 1,
                         },
                     });
 
-                    this.websocketService.getServer().to(gameId).emit('end', {message: 'Game over', score: game.score});
-                }
-            }, 10000);
-        }, 30000);
-    }
+                    game = await this.findGameById(gameId);
+                    if (game && game.current_question <= game.total_question) {
+                        this.showNextQuestion(gameId);
+                    } else {
+                        await this.database.game.update({
+                            where: {id: gameId},
+                            data: {
+                                status: Status.FINISHED,
+                            },
+                        });
+
+                        this.websocketService.getServer().to(gameId).emit('end', {message: 'Game over', score: game.score});
+                    }
+                }, 10000);
+            }, 30000);
+        }
+
 
 
     async restartGame(gameId: string): Promise<void> {

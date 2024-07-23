@@ -1,156 +1,139 @@
-import React, { useState, useEffect, use } from "react";
-import { Button } from "../ui/button";
-import { useSocket } from "@/contexts/Socket";
-import { useAuth } from "@/contexts/AuthContext";
+import {useState, useEffect, use, FC} from "react";
+import {Button} from "../ui/button";
+import {useSocket} from "@/contexts/Socket";
+import {useAuth} from "@/contexts/AuthContext";
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+
 
 interface Answer {
-  id: string;
-  text: string;
+    id: string;
+    text: string;
+    questionId: string;
 }
 
 interface Question {
-  id: string;
-  text: string;
-  answers: Answer[];
+    id: string;
+    text: string;
+    correctAnswer?: string;
+    answers: Answer[];
 }
 
-interface QuizData {
-  id: string;
-  name: string;
-  description: string;
-  difficulty: string;
-  maxPlayers: number;
-  questions: Array<{
-    question: Question;
-    questionId: string;
-    quizId: string;
-  }>;
-}
 
 interface QuizProps {
-  quizData: QuizData;
-  gameId: string;
+    gameId: string;
+    playersList: any[];
+    setPlayersList: (value: any[]) => void;
 }
 
-export const QuizGame: React.FC<QuizProps> = (props) => {
-  const { quizData, gameId } = props;
-  const { socket } = useSocket();
-  const { user } = useAuth();
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedAnswer, setSelectedAnswer] = useState<any>({
-    answerText: "",
-    questionId: "",
-  });
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-  const [correctAnswer, setCorrectAnswer] = useState<string>("");
-  const [scores, setScores] = useState<any>({});
-  const [players, setPlayers] = useState<any>([]);
-  const [playerScores, setPlayerScores] = useState<any>([]);
-  const [updateScores, setUpdateScores] = useState(false);
+export const QuizGame: FC<QuizProps> = (props) => {
+    const {gameId, playersList, setPlayersList} = props;
+    const {socket} = useSocket();
+    const [question, setQuestion] = useState<Question>(null);
+    const [answer, setAnswer] = useState<string>("");
+    const [scores, setScores] = useState<{ [key: string]: number }>({});
+    const [scorePlayer, setScorePlayer] = useState<any[]>([]);
+    const {user} = useAuth();
 
-  useEffect(() => {
-    if (quizData && quizData.questions) {
-      const formattedQuestions = quizData.questions.map((q) => q.question);
-      setQuestions(formattedQuestions);
-      setCurrentQuestion(formattedQuestions[0]);
-      setLoading(false);
-    }
-  }, [quizData]);
-
-  useEffect(() => {
-    const showCorrectAnswer = () => {
-      socket.on("correctAnswer", (data) => {
-        setCorrectAnswer(data);
-        // Attendre 4 secondes pour afficher la bonne réponse avant de passer à la question suivante
-        setTimeout(() => {
-          handleAnswerClick();
-          setCorrectAnswer("");
-          setUpdateScores(true);
-        }, 4000);
-      });
-    };
-
-    showCorrectAnswer();
-
-    return () => {
-      socket.off("correctAnswer");
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    if (updateScores) {
-      socket.emit("updatedScore", { gameId });
-      setUpdateScores(false);
-    }
-  }, [updateScores]);
-
-  useEffect(() => {
-    if (currentQuestion) {
-      const timeout = setTimeout(() => {
-        socket.emit("answer", {
-          data: {
-            gameId: gameId,
-            playerId: user.player.id,
-            answerText: selectedAnswer.answerText
-              ? selectedAnswer.answerText
-              : "",
-            questionId: currentQuestion.id,
-          },
+    useEffect(() => {
+        socket.on('gameStarted', (data) => {
+            console.log('gameStarted', data);
         });
-      }, 5000);
-      setTimer(timeout);
-    }
 
-    return () => {
-      if (timer) clearTimeout(timer);
+        socket.on('showNextQuestion', (data) => {
+            console.log('showNextQuestion', data);
+            setQuestion(data);
+        });
+
+        socket.on('showScore', (data) => {
+            console.log('showScore', data);
+            const scoresObj = JSON.parse(data);
+            setScores(scoresObj);
+        });
+
+        socket.on('answerResult', (data) => {
+            console.log('answerResult', data);
+        });
+
+        socket.on('endGame', (data) => {
+            console.log('endGame', data);
+        });
+
+        return () => {
+            socket.off('showNextQuestion');
+            socket.off('showScore');
+        }
+    }, [socket]);
+
+    console.log('question', question);
+    console.log('scores', scores);
+    console.log('scorePlayer', scorePlayer);
+
+    const mergeScoresWithPlayers = (players, scores) => {
+        return players.map(player => ({
+            ...player,
+            score: scores[player.id] || 0
+        }));
     };
-  }, [currentQuestion, selectedAnswer]);
 
-  const handleAnswerClick = () => {
-    if (timer) clearTimeout(timer);
-    const currentIndex = questions.findIndex(
-      (q) => q.id === currentQuestion?.id
-    );
-    if (currentIndex < questions.length - 1) {
-      setCurrentQuestion(questions[currentIndex + 1]);
-      setSelectedAnswer({ answerText: "", questionId: "" }); // Réinitialise la réponse sélectionnée
-    } else {
-      console.log("Quiz terminé");
-      socket.emit("gameEnded", { gameId });
-      setCurrentQuestion(null);
+    useEffect(() => {
+        const updatedPlayers = mergeScoresWithPlayers(playersList, scores);
+        setScorePlayer(updatedPlayers);
+    }, [playersList, scores]);
+
+    const handleSubmitAnswer = () => {
+        if (!gameId || !answer) return;
+        socket.emit('submitAnswer', {
+            event: 'submitAnswer',
+            data: {gameId: gameId, playerId: user.player.id, answers: [answer]}
+        });
     }
-  };
 
-  if (loading) {
-    return <div>Chargement du quiz...</div>;
-  }
 
-  if (!currentQuestion) {
-    return <div>Le quiz est terminé.</div>;
-  }
-
-  return (
-    <div>
-      <h2>{currentQuestion.text}</h2>
-      {correctAnswer && <p>La réponse correcte était: {correctAnswer}</p>}
-      <div>
-        {currentQuestion.answers &&
-          currentQuestion.answers.map((answer) => (
-            <Button
-              key={answer.id}
-              onClick={() => {
-                setSelectedAnswer({
-                  answerText: answer.text,
-                  questionId: currentQuestion.id,
-                });
-              }}
-            >
-              {answer.text}
-            </Button>
-          ))}
-      </div>
-    </div>
-  );
+    return (
+        <div className="flex flex-col justify-between items-center">
+            <h1>Question</h1>
+            <div>
+                {question && (
+                    <div className="flex flex-col">
+                        <h2>{question.text}</h2>
+                        <ul className="flex space-x-2">
+                            {question.answers.map((answer: any) => (
+                                <li key={answer.id}>
+                                    <Button value={answer.text}
+                                            onClick={() => setAnswer(answer.text)}>{answer.text}</Button>
+                                </li>
+                            ))}
+                        </ul>
+                        <Button onClick={() => handleSubmitAnswer()}>Valider</Button>
+                    </div>
+                )}
+                {scorePlayer && (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[100px]">Joueur</TableHead>
+                                <TableHead className="text-right">Score</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {scorePlayer.map((player) => (
+                                <TableRow key={player.id}>
+                                    <TableCell>{player.name}</TableCell>
+                                    <TableCell className="text-right">{player.score}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
+            </div>
+        </div>
+    );
 };

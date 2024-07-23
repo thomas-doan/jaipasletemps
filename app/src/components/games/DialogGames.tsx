@@ -11,6 +11,7 @@ import {useSocket} from "@/contexts/Socket";
 import {useAuth} from "@/contexts/AuthContext";
 import {CreateGame} from "@/components/games/CreateGame";
 import {LobbyGame} from "@/components/games/LobbyGame";
+import {QuizGame} from "@/components/games/QuizGame";
 
 interface DialogGamesProps {
     open: boolean;
@@ -40,6 +41,8 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
 
     const [steps, setSteps] = useState([...STEPS]);
     const [gameId, setGameId] = useState("");
+    const [startGame, setStartGame] = useState(false);
+    const [playersList, setPlayersList] = useState<any[]>([]);
 
     const isStepActive = (stepName: StepName) => activeStep === stepName;
     const nextStep = () => {
@@ -86,7 +89,10 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
                                 <CreateGame/>
                             )}
                             {isStepActive("lobby") && (
-                                <LobbyGame gameId={gameId}/>
+                                <LobbyGame gameId={gameId} playersList={playersList} setPlayersList={setPlayersList}/>
+                            )}
+                            {isStepActive("quiz") && (
+                                <QuizGame gameId={gameId} playersList={playersList} setPlayersList={setPlayersList} />
                             )}
                         </DialogDescription>
                     </DialogHeader>

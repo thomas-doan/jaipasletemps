@@ -3,6 +3,7 @@ import { IGameEventsHandler } from '../interfaces/game-events.handler.interface'
 import { IGameService } from '../../game/interfaces/game.service.interface';
 import { Socket } from 'socket.io';
 import {GameService} from "../../game/services/game.service";
+import {WebsocketService} from "../services/websocket.service";
 
 @Injectable()
 export class SubmitAnswerHandler implements IGameEventsHandler {
@@ -25,12 +26,15 @@ export class SubmitAnswerHandler implements IGameEventsHandler {
                 console.log('Rep valide par playerId : ' + playerId);
 
                 socket.emit('answerResult', { correct: true, playerId });
+                socket.broadcast.to(gameId).emit('answerResult', { correct: true, playerId });
                 socket.to(gameId).emit('playerScored', { playerId });
             } else {
                 socket.emit('answerResult', { correct: false });
+                socket.broadcast.to(gameId).emit('answerResult', { correct: false });
             }
         } else {
             console.log('Question already answered correctly'+playerId);
             socket.emit('answerResult', { correct: false, message: 'Question already answered correctly' });
+            socket.broadcast.to(gameId).emit('answerResult', { correct: false, message: 'Question already answered correctly' });
         }
     }}
