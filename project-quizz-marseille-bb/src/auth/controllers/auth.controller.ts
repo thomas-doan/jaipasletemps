@@ -9,17 +9,29 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    const user = await this.authService.register(registerDto.email, registerDto.pseudo, registerDto.password);
-    return this.authService.generateToken(user);
+    const user = await this.authService.register(
+      registerDto.email,
+      registerDto.password,
+      registerDto.name,
+    );
+    return { token: this.authService.generateToken(user) };
   }
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    const user = await this.authService.validateUser(loginDto.email, loginDto.password);
+    const user = await this.authService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
     if (user) {
       return this.authService.login(user);
     } else {
       return { message: 'Invalid credentials' };
     }
   }
+
+  // @Post('refresh')
+  // async refresh(@Body() body: { token: string }) {
+  //   return this.authService.refresh(body.token);
+  // }
 }

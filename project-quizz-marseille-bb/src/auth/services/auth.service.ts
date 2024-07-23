@@ -6,7 +6,10 @@ import { IAuthService } from '../interfaces/auth.service.interface';
 
 @Injectable()
 export class AuthService implements IAuthService {
-  constructor(private readonly jwtService: JwtService, private readonly userService: UserService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+  ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userService.findByEmail(email);
@@ -22,13 +25,22 @@ export class AuthService implements IAuthService {
     return this.jwtService.sign(payload);
   }
 
-  async register(email: string, pseudo: string, password: string): Promise<any> {
+  async register(email: string, password: string, name: string): Promise<any> {
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.userService.createUser({ email, pseudo, password: hashedPassword });
+    return this.userService.createUser({ email, password: hashedPassword, name: name });
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+      players: user.players.map((player: any) => ({
+        id: player.id,
+        name: player.name,
+        elo: player.elo
+      })),
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };

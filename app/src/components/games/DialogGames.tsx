@@ -1,69 +1,97 @@
-import { FC, useEffect, useState } from "react";
+import {FC, useEffect, useState} from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
-import { QuizGame } from "./QuizGame";
-import { useSocket } from "@/contexts/Socket";
-import { GamePlayersScore } from "./GamePlayersScore";
+
+import {useSocket} from "@/contexts/Socket";
+import {useAuth} from "@/contexts/AuthContext";
+import {CreateGame} from "@/components/games/CreateGame";
+import {LobbyGame} from "@/components/games/LobbyGame";
 
 interface DialogGamesProps {
-  open: boolean;
-  setOpen: (value: boolean) => void;
-  quiz: any;
-  gameId: string;
+    open: boolean;
+    setOpen: (value: boolean) => void;
+    setActiveStep: (value: any) => void;
+    activeStep: StepName;
 }
+
+type StepName = "form" | "lobby" | "quiz" | "end";
+
+type Step = {
+    name: string;
+    title: string;
+};
+
+const STEPS: Step[] = [
+    {name: "form", title: "Créer une partie"},
+    {name: "lobby", title: "Utilisateur dans la partie"},
+    {name: "quiz", title: "A vous de jouez"},
+    {name: "end", title: "Fin de la partie"},
+] as const;
+
 export const DialogGames: FC<DialogGamesProps> = (props) => {
-  const { socket } = useSocket();
-  const { open, setOpen, quiz, gameId } = props;
-  const [roomJoined, setRoomJoined] = useState(false);
-  const [playersList, setPlayersList] = useState<any>([]);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameData, setGameData] = useState<any>(null);
+    const {socket} = useSocket();
+    const {open, setOpen, activeStep, setActiveStep} = props;
+    const {user} = useAuth();
 
-  useEffect(() => {
-    socket.on("roomJoined", (data) => {
-      console.log("Room joined", data);
-      setRoomJoined(true);
-    });
-    socket.on("playersList", (data: any) => {
-      console.log("Player joined", data);
-      setPlayersList(data);
-    });
+    const [steps, setSteps] = useState([...STEPS]);
+    const [gameId, setGameId] = useState("");
 
-    socket.on("gameStarted", (data) => {
-      console.log("Game started", data);
-      setGameStarted(true);
-      setGameData(data);
-    });
+    const isStepActive = (stepName: StepName) => activeStep === stepName;
+    const nextStep = () => {
+        const currentStepIndex = steps.findIndex(
+            (step) => step.name === activeStep
+        );
+        if (currentStepIndex < steps.length - 1) {
+            setActiveStep(steps[currentStepIndex + 1].name as StepName);
+        }
+    };
+    const previousStep = () => {
+        const currentStepIndex = steps.findIndex(
+            (step) => step.name === activeStep
+        );
+        if (currentStepIndex > 0) {
+            setActiveStep(steps[currentStepIndex - 1].name as StepName);
+        }
+    };
+    useEffect(() => {
+        socket.on('roomCreated', (data) => {
+            console.log('roomCreated', data);
+            setGameId(data.roomId);
+            setActiveStep("lobby");
+        });
+        socket.on('gameStarted', (data) => {
+            console.log('gameStarted', data);
+            setActiveStep("quiz");
+        });
 
-    setRoomJoined(false);
-  }, [socket]);
+        return () => {
+            socket.off('roomCreated');
+            socket.off('gameStarted');
+        };
+    }, [socket]);
 
-  console.log("dialog quizz", quiz);
-  return (
-    <>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Quiz Game</DialogTitle>
-            <DialogDescription>
-              <div className="flex flex-col">
-                {gameStarted && gameData && (
-                  <QuizGame quizData={quiz} gameId={gameId} />
-                )}
-                {playersList.length > 0 &&
-                  playersList.map((player: any) => (
-                    <GamePlayersScore key={player.id} players={player} />
-                  ))}
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
+    return (
+        <>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className={"lg:min-w-[960px] lg:min-h-[700px]"}>
+                    <DialogHeader>
+                        <DialogTitle>Quiz Game</DialogTitle>
+                        <DialogDescription>
+                            {isStepActive("form") && (
+                                <CreateGame/>
+                            )}
+                            {isStepActive("lobby") && (
+                                <LobbyGame gameId={gameId}/>
+                            )}
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
 };

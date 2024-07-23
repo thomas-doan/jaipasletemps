@@ -1,7 +1,15 @@
 "use client";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { FC, useEffect, useState } from "react";
+import { FC, use, useEffect, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface User {
   id?: string;
@@ -17,6 +25,7 @@ interface User {
 
 export const Header: FC = () => {
   const [user, setUser] = useState<User | null>({ isAuth: false });
+  const [logout, setLogout] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -24,6 +33,14 @@ export const Header: FC = () => {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+
+  useEffect(() => {
+    if (logout) {
+      localStorage.removeItem("user");
+      setUser({ isAuth: false });
+    }
+    setLogout(false);
+  }, [logout]);
 
   return (
     <header className="max-h-16 w-full flex justify-center items-center py-2 px-3 border-b">
@@ -35,7 +52,15 @@ export const Header: FC = () => {
           </Button>
         </div>
         {user?.isAuth ? (
-          <Button>Profile</Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger>Profil</DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Profil</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLogout(true)}>
+                Déconnexion
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
           <Button type="button" variant="default">
             <Link href="/login">Connexion</Link>

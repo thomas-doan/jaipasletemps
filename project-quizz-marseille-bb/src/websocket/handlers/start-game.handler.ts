@@ -11,6 +11,6 @@ export class StartGameHandler implements IGameEventsHandler {
     async handle(socket: Socket, data: { event: string; data: { gameId: string } }): Promise<void> {
         const { gameId } = data.data;
         await this.gameService.startGame(gameId);
-        socket.to(gameId).emit('gameStarted', { message: 'Game has started' });
+        socket.broadcast.to(gameId).emit('gameStarted', { message: 'Game has started' });
     }
 }

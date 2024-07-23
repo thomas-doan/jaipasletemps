@@ -1,7 +1,7 @@
 import { Game } from '@prisma/client';
 
 export interface IGameService {
-    create(quizId: string, playerName: string, userId: string): Promise<Game>;
+    create(quizId: string, gameName:string, userId: string): Promise<Game>;
     startGame(gameId: string): Promise<void>;
     restartGame(gameId: string): Promise<void>;
     answerQuestion(gameId: string, playerId: string, answers: string[]): Promise<boolean>;
@@ -11,6 +11,6 @@ export interface IGameService {
     findGameById(gameId: string): Promise<Game>;
     checkAnswer(game: Game, answers: string[]): Promise<boolean>;
     findGameWithQuizById(gameId: string): Promise<Game & { quiz: { maxPlayers: number } }>;
-
+    getActiveRooms(): Promise<any>;
     firstCorrectAnswer: { [gameId: string]: string | null };
 }
