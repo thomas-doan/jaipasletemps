@@ -2,23 +2,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
-import { redirect } from 'next/navigation'
 import { useForm } from "react-hook-form";
 
 export const LoginForm = () => {
   const { login } = useAuth();
   const { register, handleSubmit } = useForm();
- 
 
   const onSubmit = async (data: any) => {
     const { email, password } = data;
     try {
       await login(email, password);
-      redirect("/");
     } catch (error) {
       console.error(error);
     }
-    
   };
 
   return (
