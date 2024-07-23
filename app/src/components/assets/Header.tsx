@@ -6,10 +6,9 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 interface HeaderProps {
     user: any;
@@ -23,11 +22,20 @@ export const Header: FC<HeaderProps> = (props) => {
         <header className="max-h-16 w-full flex justify-center items-center py-2 px-3 border-b">
             <div className="flex w-full justify-between">
                 <div className="flex space-x-4">
-                    <Button>
-                        <Link href={"/"}>Home</Link>
+                    <Button className="bg-transparent">
+                        <Link href={"/"} className="flex items-center space-x-1">
+                            <Image
+                                src="./assets/quizLogo.svg"
+                                alt="Quiz"
+                                width={32}
+                                height={32}
+                                priority
+                            />
+                            <h2 className="text-xl font-bold text-black">Quiz</h2>
+                        </Link>
                     </Button>
-                    <Button>
-                        <Link href="/games">Games</Link>
+                    <Button className="bg-slate-50 text-black">
+                        <Link href="/games">Quiz</Link>
                     </Button>
                 </div>
                 {user?.isAuth ? (
