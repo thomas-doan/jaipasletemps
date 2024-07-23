@@ -32,7 +32,7 @@ export const Header: FC<HeaderProps> = (props) => {
                 </div>
                 {user?.isAuth ? (
                     <DropdownMenu>
-                        <DropdownMenuTrigger>Profil</DropdownMenuTrigger>
+                        <DropdownMenuTrigger className="bg-[#F6F5F4]">{user.player.length ? user.player.name: "profile"}</DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuItem>Profil</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => logout()}>
