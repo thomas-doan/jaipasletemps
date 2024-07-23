@@ -18,7 +18,7 @@ export const CardGames: FC<CardGamesProps> = (props) => {
         <article className="rounded-lg border p-4">
             <h1>{room.name}</h1>
             {!user.isAuth ? (
-                <Button disabled>Connectez-vous pour jouer</Button>
+                <Button disabled>Hum ?</Button>
             ) : (
                 <Button
                     onClick={() => {
