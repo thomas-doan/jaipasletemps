@@ -19,9 +19,20 @@ function GamePage() {
     const [activeStep, setActiveStep] = useState<StepName>("form");
 
     useEffect(() => {
+        setTimeout(() => {
+            socket.emit("allGameStatusOpen", {event: "allGameStatusOpen", data: {}});
+
+        }, 1000);
+        return () => {
+            socket.off("allGameStatusOpen");
+        }
+    }, []);
+
+    useEffect(() => {
         socket.on("allGameStatusOpen", (data) => {
             console.log("allGameStatusOpen", data);
-            setActiveRoomsList(data.message);
+            const updatedGames = JSON.parse(data.message);
+            setActiveRoomsList(updatedGames);
         });
 
         return () => {
@@ -31,26 +42,28 @@ function GamePage() {
 
     return (
         <section
-            className="grid grid-flow-col lg:grid-cols-[auto,1fr] lg:gap-4 bg-flora-white 2xl:px-52 xl:px-12 pt-12">
-            <div>
-                {user.isAuth ? (
-                    <Button onClick={() => setOpenDialogGames(true)}>Créer un partie</Button>
-                ) : (
-                    <Button>Vous connectez pour jouer</Button>
-                )}
-                <DialogGames open={openDialogGames} setOpen={setOpenDialogGames} activeStep={activeStep}
-                             setActiveStep={setActiveStep}/>
-            </div>
-            <div>
+            className="flex flex-col lg:px-52">
+            <article>
+                <div className="flex justify-between items-center h-32">
+                    {user.isAuth ? (
+                        <Button onClick={() => setOpenDialogGames(true)}>Créer un partie</Button>
+                    ) : (
+                        <Button variant="secondary">Vous connectez pour jouer</Button>
+                    )}
+                    <DialogGames open={openDialogGames} setOpen={setOpenDialogGames} activeStep={activeStep}
+                                 setActiveStep={setActiveStep}/>
+                </div>
+            </article>
+            <article className="flex flex-col">
                 <h2 className="text-2xl font-semibold">Liste des parties</h2>
-                <div className="grid gap-4">
+                <div className="grid grid-cols-3 gap-4">
                     {activeRoomsList.map((room) => (
                         <CardGames key={room.id}
                                    setOpenDialogGames={setOpenDialogGames} setQuizId={setQuizId} room={room}
                                    setActiveStep={setActiveStep}/>
                     ))}
                 </div>
-            </div>
+            </article>
         </section>
     );
 }
