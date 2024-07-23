@@ -157,7 +157,7 @@ export class GameService implements IGameService {
                         status: Status.FINISHED,
                     },
                 });
-
+                await this.scoreService.insertScoreAndHistoryOfgame(gameId);
                 this.websocketService.getServer().to(gameId).emit('end', { message: 'Game over', score: game.score });
             }
         }, 10000);
