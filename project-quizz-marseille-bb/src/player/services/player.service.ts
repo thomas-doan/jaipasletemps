@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { CreatePlayerDto } from '../dto/create-player.dto';
 import { UpdatePlayerDto } from '../dto/update-player.dto';
 import { User } from '@prisma/client';
@@ -23,8 +23,10 @@ export class PlayerService implements IPlayerService {
     return `This action returns all player`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} player`;
+  findOne(userId: string) {
+    return this.database.player.findFirst({
+      where: {userId: userId},
+    });
   }
 
   update(id: number, updatePlayerDto: UpdatePlayerDto) {
@@ -50,5 +52,30 @@ export class PlayerService implements IPlayerService {
 
   getUserHistories(userId: string): Promise<any> {
     return Promise.resolve(undefined);
+  }
+  async findAllGameHistory(userId: string): Promise<any> {
+
+    try {
+      const player = await this.database.player.findFirst({
+        where: {userId: userId},
+      });
+      const playerHistories = await this.database.playerHistories.findMany({
+        where: {playerId: player.id},
+        include: {
+          historyGame: {
+            include: {
+              playerHistories: true,
+            },
+          },
+        },
+      });
+      return playerHistories;
+    } catch (error) {
+      if (error.status === HttpStatus.NOT_FOUND) {
+        return error;
+      } else {
+        throw new HttpException('Failed to fetch game histories due to an unexpected error.', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
   }
 }

@@ -33,4 +33,12 @@ export class Score {
         const scoreFormated = Object.fromEntries(this.score);
         return JSON.stringify(scoreFormated);
     }
+    public determineWinnerIdPlayer(): string {
+        const maxScore = Math.max(...Array.from(this.score.values()));
+        if (maxScore === 0) {
+            return null;
+        }
+        const winner = Array.from(this.score).filter(player => player[1] === maxScore);
+        return winner[0][0];
+    }
 }

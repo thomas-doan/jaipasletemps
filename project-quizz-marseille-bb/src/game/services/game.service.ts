@@ -113,6 +113,7 @@ export class GameService implements IGameService {
                         status: Status.FINISHED,
                     },
                 });
+                await this.scoreService.insertScoreAndHistoryOfgame(gameId);
                 this.websocketService.getServer().to(gameId).emit(WebSocketEvents.END_GAME, {
                     message: 'Game over',
                     score: game.score

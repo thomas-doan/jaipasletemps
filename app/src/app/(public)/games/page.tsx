@@ -26,7 +26,7 @@ function GamePage() {
         return () => {
             socket.off("allGameStatusOpen");
         }
-    }, []);
+    }, [socket]);
 
     useEffect(() => {
         socket.on("allGameStatusOpen", (data) => {
