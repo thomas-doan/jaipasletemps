@@ -23,12 +23,19 @@ export const LobbyGame: FC<LobbyGameProps> = (props) => {
     const [playerJoined, setPlayerJoined] = useState(false);
 
     useEffect(() => {
+        if (user.isAuth) {
+            const players = Array.isArray(user.player) ? user.player : [user.player];
+            setPlayersList(players);
+        }
+    }, [user]);
+
+    useEffect(() => {
         socket.on('playerJoined', (data) => {
             console.log('playerJoined', data);
             setPlayerJoined(true);
         });
-        socket.on('playersList', (data) => {
-            console.log('playersList', data);
+        socket.on('playersInRoom', (data) => {
+            console.log('playersInRoom', data);
             setPlayersList(data);
         });
 
@@ -43,9 +50,11 @@ export const LobbyGame: FC<LobbyGameProps> = (props) => {
         socket.emit('startGame', {gameId: gameId});
     };
 
+    console.log('playersList', playersList);
+
     return (
         <div>
-            {playersList && playersList.length > 0 && (
+            {playersList && (
             <Table>
                 <TableCaption>Liste des joueurs</TableCaption>
                 <TableHeader>
@@ -55,12 +64,12 @@ export const LobbyGame: FC<LobbyGameProps> = (props) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow>
-                        <TableCell className="font-medium">INV001</TableCell>
-                        <TableCell>Paid</TableCell>
-                        <TableCell>Credit Card</TableCell>
-                        <TableCell className="text-right">$250.00</TableCell>
-                    </TableRow>
+                    {playersList.map((player) => (
+                        <TableRow key={player.id}>
+                            <TableCell>{player.name}</TableCell>
+                            <TableCell>En ligne</TableCell>
+                        </TableRow>
+                    ))}
                 </TableBody>
             </Table>
             )}

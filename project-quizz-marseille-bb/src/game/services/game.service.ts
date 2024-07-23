@@ -1,9 +1,9 @@
 import {Injectable, Inject, forwardRef} from '@nestjs/common';
-import { DatabaseService } from '../../database/database.service';
-import { IGameService } from '../interfaces/game.service.interface';
-import { IPlayerService } from '../interfaces/player.service.interface';
-import { QuestionService } from '../../question/services/question.service';
-import { ScoreService } from './score.service';
+import {DatabaseService} from '../../database/database.service';
+import {IGameService} from '../interfaces/game.service.interface';
+import {IPlayerService} from '../interfaces/player.service.interface';
+import {QuestionService} from '../../question/services/question.service';
+import {ScoreService} from './score.service';
 import {Game, Status} from '@prisma/client';
 import {WebsocketService} from "../../websocket/services/websocket.service";
 import {Score} from "../model/score.model";
@@ -22,14 +22,12 @@ export class GameService implements IGameService {
         private readonly database: DatabaseService,
         private readonly questionService: QuestionService,
         private readonly scoreService: ScoreService,
-
-
     ) {
     }
 
-    async create(quizId: string, userId: string): Promise<Game> {
+    async create(quizId: string, gameName: string, userId: string): Promise<Game> {
         const quiz = await this.database.quiz.findUnique({
-            where: { id: quizId },
+            where: {id: quizId},
         });
 
         if (!quiz) {
@@ -40,7 +38,7 @@ export class GameService implements IGameService {
         const game = await this.database.game.create({
             data: {
                 quizId,
-                name: quiz.name,
+                name: gameName,
                 description: quiz.description,
                 total_question: gameQuestions.getTotalQuestions(),
                 score: {},
@@ -53,7 +51,7 @@ export class GameService implements IGameService {
         });
 
         const getUser = await this.database.player.findFirst({
-            where: { userId: userId },
+            where: {userId: userId},
         });
 
         if (!getUser) {
@@ -67,28 +65,27 @@ export class GameService implements IGameService {
                     gameId: game.id,
                 },
             });
-        }
-        catch (e) {
+        } catch (e) {
             console.log('error', e);
         }
 
         return game;
     }
 
-/*    private async initializeGameQuestion(quizId: string) {
-        const quizQuestions = await this.database.quizQuestion.findMany({
-            where: {quizId},
-            include: {question: true},
-        });
+    /*    private async initializeGameQuestion(quizId: string) {
+            const quizQuestions = await this.database.quizQuestion.findMany({
+                where: {quizId},
+                include: {question: true},
+            });
 
-        if (quizQuestions.length === 0) {
-            throw new Error('Quiz has no questions');
-        }
+            if (quizQuestions.length === 0) {
+                throw new Error('Quiz has no questions');
+            }
 
-        const questions = quizQuestions.map(q => q.question);
-        const gameQuestionsInstance = GameQuestions.getInstance(questions);
-        return gameQuestionsInstance;
-    }*/
+            const questions = quizQuestions.map(q => q.question);
+            const gameQuestionsInstance = GameQuestions.getInstance(questions);
+            return gameQuestionsInstance;
+        }*/
 
     async startGame(gameId: string): Promise<void> {
         const server = this.websocketService.getServer();
@@ -98,7 +95,7 @@ export class GameService implements IGameService {
         }
 
         const players = await this.database.playerActivites.findMany({
-            where: { gameId: gameId },
+            where: {gameId: gameId},
             select: {
                 playerId: true,
             },
@@ -106,7 +103,7 @@ export class GameService implements IGameService {
         const scoreInstance = Score.getInstance(players);
 
         await this.database.game.update({
-            where: { id: game.id },
+            where: {id: game.id},
             data: {
                 status: Status.IN_PROGRESS,
                 score: scoreInstance.getScoreJsonFormated(),
@@ -114,7 +111,7 @@ export class GameService implements IGameService {
         });
 
 
-           await this.showNextQuestion(game.id);
+        await this.showNextQuestion(game.id);
     }
 
     async showNextQuestion(gameId: string): Promise<void> {
@@ -136,35 +133,34 @@ export class GameService implements IGameService {
 
         this.websocketService.getServer().to(gameId).emit(WebSocketEvents.SHOW_NEXT_QUESTION, question);
 
-      setTimeout(async () => {
-   const scoreInstance = Score.getInstance().getScoreJsonFormated();
-          console.log(`Scores pour le jeu ${gameId}:`, scoreInstance);
-
         setTimeout(async () => {
-            await this.database.game.update({
-                where: { id: gameId },
-                data: {
-                    current_question: game.current_question + 1,
-                },
-            });
+            const scoreInstance = Score.getInstance().getScoreJsonFormated();
+            console.log(`Scores pour le jeu ${gameId}:`, scoreInstance);
 
-            game = await this.findGameById(gameId);
-            if (game && game.current_question <= game.total_question) {
-                this.showNextQuestion(gameId);
-            } else {
+            setTimeout(async () => {
                 await this.database.game.update({
-                    where: { id: gameId },
+                    where: {id: gameId},
                     data: {
-                        status: Status.FINISHED,
+                        current_question: game.current_question + 1,
                     },
                 });
 
-                this.websocketService.getServer().to(gameId).emit('end', { message: 'Game over', score: game.score });
-            }
-        }, 10000);
-      }, 30000);
-    }
+                game = await this.findGameById(gameId);
+                if (game && game.current_question <= game.total_question) {
+                    this.showNextQuestion(gameId);
+                } else {
+                    await this.database.game.update({
+                        where: {id: gameId},
+                        data: {
+                            status: Status.FINISHED,
+                        },
+                    });
 
+                    this.websocketService.getServer().to(gameId).emit('end', {message: 'Game over', score: game.score});
+                }
+            }, 10000);
+        }, 30000);
+    }
 
 
     async restartGame(gameId: string): Promise<void> {
@@ -175,13 +171,13 @@ export class GameService implements IGameService {
         clearInterval(this.gameIntervals.get(gameId) as unknown as number);
         this.gameIntervals.delete(gameId);
         await this.database.game.delete({
-            where: { id: gameId },
+            where: {id: gameId},
         });
     }
 
     async answerQuestion(gameId: string, playerId: string, answers: string[]): Promise<boolean> {
         const game = await this.database.game.findUnique({
-            where: { id: gameId },
+            where: {id: gameId},
         });
 
         if (!game) {
@@ -201,7 +197,7 @@ export class GameService implements IGameService {
             scoreInstance.updateScore(playerId);
 
             await this.database.game.update({
-                where: { id: gameId },
+                where: {id: gameId},
                 data: {
                     score: scoreInstance.getScoreJsonFormated(),
                 },
@@ -221,7 +217,7 @@ export class GameService implements IGameService {
 
     async findGameById(gameId: string): Promise<Game> {
         return this.database.game.findUnique({
-            where: { id: gameId },
+            where: {id: gameId},
         });
     }
 
@@ -232,7 +228,7 @@ export class GameService implements IGameService {
 
     async findGameWithQuizById(gameId: string): Promise<(Game & { quiz: { maxPlayers: number } }) | null> {
         return this.database.game.findUnique({
-            where: { id: gameId },
+            where: {id: gameId},
             include: {
                 quiz: {
                     select: {
@@ -253,7 +249,8 @@ export class GameService implements IGameService {
                 room.size > 1 ||
                 (room.size === 1 && !server.sockets.sockets.has(roomId))
             ) {
-                activeRooms.push(roomId);
+                const gameData = await this.findGameById(roomId);
+                activeRooms.push(gameData);
             }
         }
 

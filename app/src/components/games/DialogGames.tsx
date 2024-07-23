@@ -15,6 +15,8 @@ import {LobbyGame} from "@/components/games/LobbyGame";
 interface DialogGamesProps {
     open: boolean;
     setOpen: (value: boolean) => void;
+    setActiveStep: (value: any) => void;
+    activeStep: StepName;
 }
 
 type StepName = "form" | "lobby" | "quiz" | "end";
@@ -25,19 +27,18 @@ type Step = {
 };
 
 const STEPS: Step[] = [
-    { name: "form", title: "Créer une partie" },
-    { name: "lobby", title: "Utilisateur dans la partie" },
-    { name: "quiz", title: "A vous de jouez" },
-    { name: "end", title: "Fin de la partie" },
+    {name: "form", title: "Créer une partie"},
+    {name: "lobby", title: "Utilisateur dans la partie"},
+    {name: "quiz", title: "A vous de jouez"},
+    {name: "end", title: "Fin de la partie"},
 ] as const;
 
 export const DialogGames: FC<DialogGamesProps> = (props) => {
     const {socket} = useSocket();
-    const {open, setOpen} = props;
+    const {open, setOpen, activeStep, setActiveStep} = props;
     const {user} = useAuth();
 
     const [steps, setSteps] = useState([...STEPS]);
-    const [activeStep, setActiveStep]= useState<StepName>("form");
     const [gameId, setGameId] = useState("");
 
     const isStepActive = (stepName: StepName) => activeStep === stepName;
@@ -77,7 +78,7 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent>
+                <DialogContent className={"lg:min-w-[960px] lg:min-h-[700px]"}>
                     <DialogHeader>
                         <DialogTitle>Quiz Game</DialogTitle>
                         <DialogDescription>

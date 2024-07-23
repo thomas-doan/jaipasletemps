@@ -1,28 +1,31 @@
-import {Injectable, Inject} from '@nestjs/common';
+import {Injectable, Inject, forwardRef} from '@nestjs/common';
 import { IGameEventsHandler } from '../interfaces/game-events.handler.interface';
 import { IGameService } from '../../game/interfaces/game.service.interface';
 import { Socket } from 'socket.io';
+import {WebsocketService} from "../services/websocket.service";
 
 @Injectable()
 export class CreateRoomHandler implements IGameEventsHandler {
   constructor(
+      @Inject(forwardRef(() => WebsocketService))
+      private readonly websocketService: WebsocketService,
     @Inject('IGameService') private readonly gameService: IGameService,
   ) {}
 
   async handle(
     socket: Socket,
-    data: { event: string; data: { quizId: string; userId: string } },
+    data: { event: string; data: { quizId: string; gameName:string, userId: string } },
   ): Promise<void> {
     console.log('CreateRoomHandler received data:', data);
-    const { quizId, userId } = data.data;
+    const { quizId, gameName, userId } = data.data;
 
-    if (!quizId || !userId) {
+    if (!quizId || !gameName || !userId) {
       console.error('Invalid data received:', data);
       socket.emit('error', 'Invalid data received');
       return;
     }
     try {
-      const game = await this.gameService.create(quizId, userId);
+      const game = await this.gameService.create(quizId, gameName, userId);
       console.log('Game created:', game);
 
       try {
@@ -33,8 +36,8 @@ export class CreateRoomHandler implements IGameEventsHandler {
 
 
         const activeRooms = await this.gameService.getActiveRooms();
-        socket.broadcast.emit('activeRooms', activeRooms);
-
+        const server = this.websocketService.getServer();
+        server.emit('activeRooms', activeRooms);
       } catch (err) {
         console.error(`Error joining room ${game.id}:`, err);
         socket.emit('error', 'Error joining room');
