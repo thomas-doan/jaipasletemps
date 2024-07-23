@@ -54,7 +54,7 @@ export const LobbyGame: FC<LobbyGameProps> = (props) => {
     console.log('playersList', playersList);
 
     return (
-        <div>
+        <div className="w-full">
             {playersList && (
                 <Table>
                     <TableCaption>Liste des joueurs</TableCaption>

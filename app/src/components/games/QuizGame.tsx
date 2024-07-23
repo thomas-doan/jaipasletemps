@@ -5,7 +5,6 @@ import {useAuth} from "@/contexts/AuthContext";
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -40,6 +39,8 @@ export const QuizGame: FC<QuizProps> = (props) => {
     const [answer, setAnswer] = useState<string>("");
     const [scores, setScores] = useState<{ [key: string]: number }>({});
     const [scorePlayer, setScorePlayer] = useState<any[]>([]);
+    const [endGame, setEndGame] = useState<boolean>(false);
+    const [resultAnswer, setResultAnswer] = useState({correct: null, message: ""});
     const {user} = useAuth();
 
     useEffect(() => {
@@ -57,10 +58,17 @@ export const QuizGame: FC<QuizProps> = (props) => {
 
         socket.on('answerResult', (data) => {
             console.log('answerResult', data);
+            setResultAnswer({correct: data.correct, message: ""});
+        });
+
+        socket.on('correctAnswerGiven', (data) => {
+            console.log('correctAnswerGiven', data);
+            setResultAnswer({correct: data.correct, message: "La réponse a déja était donnée"});
         });
 
         socket.on('endGame', (data) => {
             console.log('endGame', data);
+            setEndGame(true);
         });
 
         return () => {
@@ -91,16 +99,23 @@ export const QuizGame: FC<QuizProps> = (props) => {
             event: 'submitAnswer',
             data: {gameId: gameId, playerId: user.player.id, answers: [answer]}
         });
-    }
+    };
+
+    useEffect(() => {
+        setResultAnswer({correct: null, message: ""});
+    }, [question]);
 
 
     return (
-        <div className="flex flex-col justify-between items-center">
-            <h1>Question</h1>
-            <div>
-                {question && (
+        <div className="flex flex-col justify-between items-center w-full">
+            <div className="">
+                {(question && !endGame) && (
                     <div className="flex flex-col">
+                        <h1>Question</h1>
                         <h2>{question.text}</h2>
+                        {resultAnswer.correct !== null && resultAnswer.correct ? <p>Bonne réponse</p> :
+                            <p>Mauvaise réponse</p>}
+                        <p>Choisissez une réponse</p>
                         <ul className="flex space-x-2">
                             {question.answers.map((answer: any) => (
                                 <li key={answer.id}>
@@ -113,22 +128,28 @@ export const QuizGame: FC<QuizProps> = (props) => {
                     </div>
                 )}
                 {scorePlayer && (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Joueur</TableHead>
-                                <TableHead className="text-right">Score</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {scorePlayer.map((player) => (
-                                <TableRow key={player.id}>
-                                    <TableCell>{player.name}</TableCell>
-                                    <TableCell className="text-right">{player.score}</TableCell>
+                    <div>
+                        {endGame && (
+                            <>
+                                <h2>Fin du jeu</h2>
+                            </>)}
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[100px]">Joueur</TableHead>
+                                    <TableHead className="text-right">Score</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {scorePlayer.map((player) => (
+                                    <TableRow key={player.id}>
+                                        <TableCell>{player.name}</TableCell>
+                                        <TableCell className="text-right">{player.score}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
                 )}
             </div>
         </div>

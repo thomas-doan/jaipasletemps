@@ -81,10 +81,10 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className={"lg:min-w-[960px] lg:min-h-[700px]"}>
+                <DialogContent className={"lg:min-w-[960px] lg:min-h-[700px] min-w-screen min-h-[700px]"}>
                     <DialogHeader>
                         <DialogTitle>Quiz Game</DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="w-full h-full">
                             {isStepActive("form") && (
                                 <CreateGame/>
                             )}
