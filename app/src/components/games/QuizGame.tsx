@@ -43,9 +43,6 @@ export const QuizGame: FC<QuizProps> = (props) => {
     const {user} = useAuth();
 
     useEffect(() => {
-        socket.on('gameStarted', (data) => {
-            console.log('gameStarted', data);
-        });
 
         socket.on('showNextQuestion', (data) => {
             console.log('showNextQuestion', data);
