@@ -1,13 +1,11 @@
 "use client";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { FC, use, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -37,6 +35,7 @@ export const Header: FC = () => {
   useEffect(() => {
     if (logout) {
       localStorage.removeItem("user");
+      console.log("deconnexion");
       setUser({ isAuth: false });
     }
     setLogout(false);
@@ -49,6 +48,9 @@ export const Header: FC = () => {
           <Button>Home</Button>
           <Button>
             <Link href="/games">Games</Link>
+          </Button>
+          <Button>
+            <Link href="/games">Tests</Link>
           </Button>
         </div>
         {user?.isAuth ? (

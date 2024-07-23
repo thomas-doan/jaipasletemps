@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
 
+
 interface RegisterFormProps {
   setSuccessRegister: (value: boolean) => void;
 }
