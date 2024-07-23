@@ -17,9 +17,14 @@ export class PlayerController {
     return this.playerService.findAll();
   }
 
-  @Get(':id')
+  @Get('info-player/:id')
   findOne(@Param('id') id: string) {
-    return this.playerService.findOne(+id);
+    return this.playerService.findOne(id);
+  }
+
+  @Get('game-history/:id')
+  findAllGameHistory(@Param('id') id: string) {
+    return this.playerService.findAllGameHistory(id);
   }
 
   @Patch(':id')
