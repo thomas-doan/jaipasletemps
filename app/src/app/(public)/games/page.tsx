@@ -19,10 +19,8 @@ function GamePage() {
     const [activeStep, setActiveStep] = useState<StepName>("form");
 
     useEffect(() => {
-        setTimeout(() => {
-            socket.emit("allGameStatusOpen", {event: "allGameStatusOpen", data: {}});
+        socket.emit("allGameStatusOpen", {event: "allGameStatusOpen", data: {}});
 
-        }, 1000);
         return () => {
             socket.off("allGameStatusOpen");
         }

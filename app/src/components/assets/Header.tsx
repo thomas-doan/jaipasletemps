@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import {Button} from "../ui/button";
-import {FC, use, useEffect, useState} from "react";
+import {FC} from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,

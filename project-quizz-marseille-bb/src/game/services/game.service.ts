@@ -223,6 +223,7 @@ export class GameService implements IGameService {
     async getAllGamesWithStatusOpen(): Promise<Game[]> {
         return this.database.game.findMany({
             where: { status: Status.OPEN },
+            orderBy: { createdAt: 'desc' },
         });
     }
 
