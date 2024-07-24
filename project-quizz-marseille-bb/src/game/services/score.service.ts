@@ -35,6 +35,11 @@ export class ScoreService implements IScoreService {
         for (const activity of playersActivities) {
             await this.upsertPlayerHistory(activity.player, historyGame.id, winnerId);
         }
+        await this.deleteGame(gameId);
+    }
+
+    async deleteGame(gameId: string): Promise<void> {
+        await this.database.game.delete({ where: { id: gameId } });
     }
 
     private async createHistoryGame(gameFinished: any, winnerId: string | null) {

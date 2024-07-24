@@ -155,3 +155,131 @@ VALUES (UUID(), 'Musée des Beaux-Arts de Marseille', (SELECT id FROM `Question`
 
 INSERT INTO `QuizQuestion` (quizId, questionId)
 VALUES ((SELECT id FROM `Quiz` WHERE name = 'Quiz Marseille'), (SELECT id FROM `Question` WHERE text = 'Quel est le nom du Musée des Beaux-Arts de Marseille ?'));
+
+
+/* QUIZ 3 */
+-- Insérer le thème
+INSERT INTO `Theme` (id, name, description)
+VALUES (UUID(), 'Gestion de projet', 'Différentes méthodes de gestion de projet en développement logiciel');
+
+-- Insérer le quiz
+INSERT INTO `Quiz` (id, name, description, difficulty, maxPlayers, createdAt, updatedAt)
+VALUES (UUID(), 'Quiz sur les méthodes de gestion de projet', 'Testez vos connaissances sur les méthodes de gestion de projet comme Kanban, Agile, etc.', 'MEDIUM', 4, NOW(), NOW());
+
+-- Lier le thème au quiz
+INSERT INTO `ThemeQuiz` (themeId, quizId)
+VALUES ((SELECT id FROM `Theme` WHERE name = 'Gestion de projet'), (SELECT id FROM `Quiz` WHERE name = 'Quiz sur les méthodes de gestion de projet'));
+
+-- Question 1
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quelle méthode de gestion de projet utilise des sprints ?', 'Scrum', (SELECT id FROM `Theme` WHERE name = 'Gestion de projet'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet utilise des sprints ?')),
+(UUID(), 'Kanban', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet utilise des sprints ?')),
+(UUID(), 'Lean', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet utilise des sprints ?')),
+(UUID(), 'XP', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet utilise des sprints ?'));
+
+-- Question 2
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quelle méthode se concentre sur l''optimisation du flux de travail ?', 'Kanban', (SELECT id FROM `Theme` WHERE name = 'Gestion de projet'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), 'Kanban', (SELECT id FROM `Question` WHERE text = 'Quelle méthode se concentre sur l''optimisation du flux de travail ?')),
+(UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthode se concentre sur l''optimisation du flux de travail ?')),
+(UUID(), 'Waterfall', (SELECT id FROM `Question` WHERE text = 'Quelle méthode se concentre sur l''optimisation du flux de travail ?')),
+(UUID(), 'Agile', (SELECT id FROM `Question` WHERE text = 'Quelle méthode se concentre sur l''optimisation du flux de travail ?'));
+
+-- Question 3
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quelle méthode utilise des stand-ups quotidiens ?', 'Scrum', (SELECT id FROM `Theme` WHERE name = 'Gestion de projet'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthode utilise des stand-ups quotidiens ?')),
+(UUID(), 'Kanban', (SELECT id FROM `Question` WHERE text = 'Quelle méthode utilise des stand-ups quotidiens ?')),
+(UUID(), 'Lean', (SELECT id FROM `Question` WHERE text = 'Quelle méthode utilise des stand-ups quotidiens ?')),
+(UUID(), 'XP', (SELECT id FROM `Question` WHERE text = 'Quelle méthode utilise des stand-ups quotidiens ?'));
+
+-- Question 4
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quelle méthode de gestion de projet est basée sur le manifeste Agile ?', 'Agile', (SELECT id FROM `Theme` WHERE name = 'Gestion de projet'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), 'Agile', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est basée sur le manifeste Agile ?')),
+(UUID(), 'Waterfall', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est basée sur le manifeste Agile ?')),
+(UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est basée sur le manifeste Agile ?')),
+(UUID(), 'Kanban', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est basée sur le manifeste Agile ?'));
+
+-- Question 5
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quelle méthode de gestion de projet est linéaire et séquentielle ?', 'Waterfall', (SELECT id FROM `Theme` WHERE name = 'Gestion de projet'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), 'Waterfall', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est linéaire et séquentielle ?')),
+(UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est linéaire et séquentielle ?')),
+(UUID(), 'Kanban', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est linéaire et séquentielle ?')),
+(UUID(), 'Agile', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est linéaire et séquentielle ?'));
+
+/* QUIZ 4 */
+-- Thème
+INSERT INTO `Theme` (id, name, description)
+VALUES (UUID(), 'Programmation', 'Quiz sur les concepts de base de la programmation');
+
+-- Quiz
+INSERT INTO `Quiz` (id, name, description, difficulty, maxPlayers, createdAt, updatedAt)
+VALUES (UUID(), 'Bases de la Programmation', 'Testez vos connaissances sur les concepts de base de la programmation', 'EASY', 4, NOW(), NOW());
+
+-- Liaison Thème-Quiz
+INSERT INTO `ThemeQuiz` (themeId, quizId)
+VALUES ((SELECT id FROM `Theme` WHERE name = 'Programmation'), (SELECT id FROM `Quiz` WHERE name = 'Bases de la Programmation'));
+
+-- Questions et Réponses
+-- Question 1
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?', 'var', (SELECT id FROM `Theme` WHERE name = 'Programmation'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), 'var', (SELECT id FROM `Question` WHERE text = 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?')),
+(UUID(), 'int', (SELECT id FROM `Question` WHERE text = 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?')),
+(UUID(), 'float', (SELECT id FROM `Question` WHERE text = 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?')),
+(UUID(), 'double', (SELECT id FROM `Question` WHERE text = 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?'));
+
+-- Question 2
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quelle est la sortie de console.log(typeof 42) en JavaScript ?', 'number', (SELECT id FROM `Theme` WHERE name = 'Programmation'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), 'number', (SELECT id FROM `Question` WHERE text = 'Quelle est la sortie de console.log(typeof 42) en JavaScript ?')),
+(UUID(), 'string', (SELECT id FROM `Question` WHERE text = 'Quelle est la sortie de console.log(typeof 42) en JavaScript ?')),
+(UUID(), 'boolean', (SELECT id FROM `Question` WHERE text = 'Quelle est la sortie de console.log(typeof 42) en JavaScript ?')),
+(UUID(), 'undefined', (SELECT id FROM `Question` WHERE text = 'Quelle est la sortie de console.log(typeof 42) en JavaScript ?'));
+
+-- Question 3
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?', 'switch', (SELECT id FROM `Theme` WHERE name = 'Programmation'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), 'switch', (SELECT id FROM `Question` WHERE text = 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?')),
+(UUID(), 'if', (SELECT id FROM `Question` WHERE text = 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?')),
+(UUID(), 'for', (SELECT id FROM `Question` WHERE text = 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?')),
+(UUID(), 'while', (SELECT id FROM `Question` WHERE text = 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?'));
+
+-- Question 4
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quel est le résultat de 3 + 2 * 2 en programmation ?', '7', (SELECT id FROM `Theme` WHERE name = 'Programmation'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), '7', (SELECT id FROM `Question` WHERE text = 'Quel est le résultat de 3 + 2 * 2 en programmation ?')),
+(UUID(), '10', (SELECT id FROM `Question` WHERE text = 'Quel est le résultat de 3 + 2 * 2 en programmation ?')),
+(UUID(), '8', (SELECT id FROM `Question` WHERE text = 'Quel est le résultat de 3 + 2 * 2 en programmation ?')),
+(UUID(), '5', (SELECT id FROM `Question` WHERE text = 'Quel est le résultat de 3 + 2 * 2 en programmation ?'));
+
+-- Question 5
+INSERT INTO `Question` (id, text, correctAnswer, themeId)
+VALUES (UUID(), 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?', 'push', (SELECT id FROM `Theme` WHERE name = 'Programmation'));
+
+INSERT INTO `Answer` (id, text, questionId)
+VALUES (UUID(), 'push', (SELECT id FROM `Question` WHERE text = 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?')),
+(UUID(), 'pop', (SELECT id FROM `Question` WHERE text = 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?')),
+(UUID(), 'shift', (SELECT id FROM `Question` WHERE text = 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?')),
+(UUID(), 'unshift', (SELECT id FROM `Question` WHERE text = 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?'));
