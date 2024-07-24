@@ -127,7 +127,7 @@ export class GameService implements IGameService {
             }
 
             // Envoi de la question
-            await this.emitGame(gameId, question);
+            await this.showFirstQuestion(gameId, question);
 
             // Mise à jour de la question actuelle
             await this.database.game.update({
@@ -151,7 +151,7 @@ export class GameService implements IGameService {
         setTimeout(() => handleQuestion(game.current_question), 1);
     }
 
-    async emitGame(gameId: string, question: any): Promise<void> {
+    async showFirstQuestion(gameId: string, question: any): Promise<void> {
         this.websocketService.getServer().to(gameId).emit(WebSocketEvents.SHOW_NEXT_QUESTION, question);
 
     }
