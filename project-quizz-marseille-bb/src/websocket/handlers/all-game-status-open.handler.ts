@@ -21,7 +21,6 @@ export class AllGameStatusOpenHandler implements IGameEventsHandler {
 
             if (currentGames !== this.previousGames) {
                 this.previousGames = currentGames;
-                console.log('allGameStatusOpen', currentGames);
                 socket.emit('allGameStatusOpen', { message: currentGames });
                 socket.broadcast.emit('allGameStatusOpen', { message: currentGames });
             }

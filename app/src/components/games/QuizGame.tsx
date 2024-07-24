@@ -1,4 +1,4 @@
-import { useState, useEffect, use, FC } from "react";
+import { useState, useEffect, FC } from "react";
 import { Button } from "../ui/button";
 import { useSocket } from "@/contexts/Socket";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Check } from "lucide-react";
 
 interface Answer {
   id: string;
@@ -38,16 +39,17 @@ export const QuizGame: FC<QuizProps> = (props) => {
   const [scores, setScores] = useState<{ [key: string]: number }>({});
   const [scorePlayer, setScorePlayer] = useState<any[]>([]);
   const [endGame, setEndGame] = useState<boolean>(false);
-  const [resultAnswer, setResultAnswer] = useState({
-    correct: null,
-    message: "",
-  });
+  const [correctAnswer, setCorrectAnswer] = useState("");
+  const [resultAnswer, setResultAnswer] = useState<any>();
+  const [winner, setWinner] = useState<any>();
   const { user } = useAuth();
 
   useEffect(() => {
     socket.on("showNextQuestion", (data) => {
       console.log("showNextQuestion", data);
       setQuestion(data);
+      setCorrectAnswer(data.correctAnswer);
+      setResultAnswer(null);
     });
 
     socket.on("showScore", (data) => {
@@ -58,25 +60,27 @@ export const QuizGame: FC<QuizProps> = (props) => {
 
     socket.on("answerResult", (data) => {
       console.log("answerResult", data);
-      setResultAnswer({ correct: data.correct, message: "" });
+      setResultAnswer(data);
     });
 
     socket.on("correctAnswerGiven", (data) => {
       console.log("correctAnswerGiven", data);
-      setResultAnswer({
-        correct: data.correct,
-        message: "La réponse a déja était donnée",
-      });
+      setResultAnswer(data);
     });
 
     socket.on("endGame", (data) => {
       console.log("endGame", data);
+      const scoresObj = JSON.parse(data.score);
+      setScores(scoresObj);
       setEndGame(true);
     });
 
     return () => {
       socket.off("showNextQuestion");
       socket.off("showScore");
+      socket.off("answerResult");
+      socket.off("correctAnswerGiven");
+      socket.off("endGame");
     };
   }, [socket]);
 
@@ -92,48 +96,82 @@ export const QuizGame: FC<QuizProps> = (props) => {
     setScorePlayer(updatedPlayers);
   }, [playersList, scores]);
 
+  useEffect(() => {
+    if (!endGame) return;
+    if (scorePlayer.length > 0) {
+      const highestScoringPlayer = scorePlayer.reduce((prev, current) => {
+        return prev.score > current.score ? prev : current;
+      });
+      setWinner(highestScoringPlayer);
+    }
+  }, [endGame]);
+
   const handleSubmitAnswer = () => {
     if (!gameId || !answer) return;
     socket.emit("submitAnswer", {
       event: "submitAnswer",
-      data: { gameId: gameId, playerId: user.player.id, answers: [answer] },
+      data: { gameId: gameId, playerId: user.player.id, answer: answer },
     });
   };
 
-  useEffect(() => {
-    setResultAnswer({ correct: null, message: "" });
-  }, [question]);
+  console.log("scorePlayer", scorePlayer);
 
   return (
     <div className="flex flex-col justify-between items-center w-full h-full">
       <div className="w-full">
-        {question && (
+        {question && !endGame && (
           <div className="flex flex-col items-center w-full space-y-4">
             <h1>Question</h1>
             <h2 className="text-3xl text-black">{question.text}</h2>
-            {/* {resultAnswer.correct !== null && resultAnswer.correct ? <p>Bonne réponse</p> :
-                            <p>Mauvaise réponse</p>} */}
             <div className="grid grid-cols-2 gap-2 w-full">
-              {question.answers.map((answer: any) => (
+              {question.answers.map((answerOption: any) => (
                 <Button
-                  value={answer.text}
-                  key={answer.id}
-                  onClick={() => setAnswer(answer.text)}
-                  className="w-full bg-[#6366F1] text-white"
+                  value={answerOption.text}
+                  key={answerOption.id}
+                  onClick={() => setAnswer(answerOption.text)}
+                  className={`${
+                    answer === answerOption.text
+                      ? "bg-[#93c5fd] text-black hover:bg-blue-100"
+                      : "bg-[#2563eb] text-white hover:bg-blue-500"
+                  }`}
                 >
-                  {answer.text}
+                  {answerOption.text}
                 </Button>
               ))}
+              <div className="min-h-5 flex justify-center">
+                {resultAnswer &&
+                  (resultAnswer.correct ? (
+                    <span className="text-green-500">Bonne réponse</span>
+                  ) : (
+                    <div className="flex flex-col">
+                      <span className="text-red-500">Mauvaise réponse</span>
+                      <span>
+                        La bonne réponse était : {question.correctAnswer}
+                      </span>
+                    </div>
+                  ))}
+              </div>
             </div>
-            <Button onClick={() => handleSubmitAnswer()} className="bg-[#D1FAE5] text-black px-4">Valider</Button>
+            <Button
+              onClick={() => handleSubmitAnswer()}
+              className="bg-[#22c55e] hover:bg-green-400 border-emerald-600 text-black px-4 flex items-center space-x-2"
+            >
+              <Check />
+              <span>Valider</span>
+            </Button>
           </div>
         )}
         {scorePlayer && (
           <div className="w-full">
             {endGame && (
-              <>
-                <h2>Fin du jeu</h2>
-              </>
+              <div className="flex flex-col justify-center items-center w-full">
+                <h2 className="text-xl">Partie terminée</h2>
+                <h3 className="text-xl">
+                  {winner
+                    ? `Le gagnant est ${winner.name}`
+                    : "Personne n'a gagné"}
+                </h3>
+              </div>
             )}
             <Table>
               <TableHeader>

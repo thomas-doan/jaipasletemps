@@ -8,7 +8,7 @@ import {useRouter} from "next/navigation";
 export const LoginForm = () => {
   const { login } = useAuth();
   const { register, handleSubmit } = useForm();
-  const { router } = useRouter()
+  const router = useRouter()
 
   const onSubmit = async (data: any) => {
     const { email, password } = data;

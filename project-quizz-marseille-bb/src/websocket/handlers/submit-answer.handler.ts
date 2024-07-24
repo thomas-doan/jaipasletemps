@@ -11,13 +11,13 @@ export class SubmitAnswerHandler implements IGameEventsHandler {
         private readonly gameService: GameService,
     ) {}
 
-    async handle(socket: Socket, data: { event: string; data: { gameId: string; playerId: string; answers: string[] } }): Promise<void> {
-        const { gameId, playerId, answers } = data.data;
+    async handle(socket: Socket, data: { event: string; data: { gameId: string; playerId: string; answer: string } }): Promise<void> {
+        const { gameId, playerId, answer } = data.data;
 
         // Vérifiez si une réponse correcte a déjà été enregistrée pour cette question
+
         if (!this.gameService.firstCorrectAnswer[gameId]) {
-            console.log('Checking answer'+playerId);
-            const isCorrect = await this.gameService.answerQuestion(gameId, playerId, answers);
+            const isCorrect = await this.gameService.answerQuestion(gameId, playerId, answer);
 
             if (isCorrect) {
                 // Enregistrez la première réponse correcte pour ce jeu
@@ -30,7 +30,7 @@ export class SubmitAnswerHandler implements IGameEventsHandler {
                 socket.emit('answerResult', { correct: false });
             }
         } else {
-            console.log('Question already answered correctly'+playerId);
+            console.log('Question already answered correctly' +playerId);
             socket.emit('correctAnswerGiven', { correct: false, message: 'Question already answered correctly' });
         }
     }}
