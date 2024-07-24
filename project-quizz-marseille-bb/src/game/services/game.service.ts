@@ -1,4 +1,4 @@
-import {Injectable, Inject, forwardRef} from '@nestjs/common';
+import {Injectable, Inject, forwardRef, Logger} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { IGameService } from '../interfaces/game.service.interface';
 import { IPlayerService } from '../interfaces/player.service.interface';
@@ -8,10 +8,13 @@ import {Game, Status} from '@prisma/client';
 import {WebsocketService} from "../../websocket/services/websocket.service";
 import {Score} from "../model/score.model";
 import {WebSocketEvents} from "../../websocket/enum/websocket-events.enum";
+import {SchedulerRegistry} from "@nestjs/schedule";
+import { CronJob } from 'cron';
 
 @Injectable()
 export class GameService implements IGameService {
     private gameIntervals: Map<string, NodeJS.Timeout> = new Map();
+    private readonly logger = new Logger(GameService.name);
     public firstCorrectAnswer: { [gameId: string]: string | null } = {};
 
     constructor(
@@ -21,6 +24,7 @@ export class GameService implements IGameService {
         private readonly database: DatabaseService,
         private readonly questionService: QuestionService,
         private readonly scoreService: ScoreService,
+        private readonly schedulerRegistry: SchedulerRegistry,
 
 
     ) {
@@ -117,7 +121,7 @@ export class GameService implements IGameService {
     }
 
     async showNextQuestion(gameId: string): Promise<void> {
-        console.log('showNextQuestion');
+        this.logger.log('showNextQuestion');
         let game = await this.findGameById(gameId);
         if (!game) {
             throw new Error('Game not found');
@@ -125,9 +129,9 @@ export class GameService implements IGameService {
 
         this.firstCorrectAnswer[gameId] = null;
 
-        console.log(`question index: ${game.current_question}`);
+        this.logger.log(`question index: ${game.current_question}`);
         const question = await this.questionService.getQuestionByIndexAssociateWithChoice(game.current_question);
-        console.log('questionEncoursDanslaBoucle', question);
+        this.logger.log('questionEncoursDanslaBoucle', question);
 
         if (!question) {
             throw new Error('Question not found');
@@ -135,11 +139,24 @@ export class GameService implements IGameService {
 
         this.websocketService.getServer().to(gameId).emit(WebSocketEvents.SHOW_NEXT_QUESTION, question);
 
-      setTimeout(async () => {
-   const scoreInstance = Score.getInstance().getScoreJsonFormated();
-          console.log(`Scores pour le jeu ${gameId}:`, scoreInstance);
+        this.scheduleScoreUpdate(gameId, 10);
+        this.scheduleNextQuestion(gameId, 20);
+    }
 
-        setTimeout(async () => {
+    private scheduleScoreUpdate(gameId: string, seconds: number) {
+        const job = new CronJob(new Date(Date.now() + seconds * 1000), async () => {
+            const scoreInstance = Score.getInstance().getScoreJsonFormated();
+            this.logger.log(`Scores pour le jeu ${gameId}:`, scoreInstance);
+            this.schedulerRegistry.deleteCronJob(`scoreUpdate-${gameId}`);
+        });
+
+        this.schedulerRegistry.addCronJob(`scoreUpdate-${gameId}`, job);
+        job.start();
+    }
+
+    private scheduleNextQuestion(gameId: string, seconds: number) {
+        const job = new CronJob(new Date(Date.now() + seconds * 1000), async () => {
+            let game = await this.findGameById(gameId);
             await this.database.game.update({
                 where: { id: gameId },
                 data: {
@@ -160,10 +177,12 @@ export class GameService implements IGameService {
                 await this.scoreService.insertScoreAndHistoryOfgame(gameId);
                 this.websocketService.getServer().to(gameId).emit('end', { message: 'Game over', score: game.score });
             }
-        }, 10000);
-      }, 30000);
-    }
+            this.schedulerRegistry.deleteCronJob(`nextQuestion-${gameId}`);
+        });
 
+        this.schedulerRegistry.addCronJob(`nextQuestion-${gameId}`, job);
+        job.start();
+    }
 
 
     async restartGame(gameId: string): Promise<void> {
