@@ -65,6 +65,12 @@ export class PlayerService implements IPlayerService {
           historyGame: {
             include: {
               playerHistories: true,
+              quiz: {
+                select: {
+                  name: true,
+                  description: true,
+                },
+              }
             },
           },
         },

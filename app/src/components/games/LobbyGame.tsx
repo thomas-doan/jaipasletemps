@@ -54,7 +54,7 @@ export const LobbyGame: FC<LobbyGameProps> = (props) => {
     console.log('playersList', playersList);
 
     return (
-        <div className="w-full">
+        <span className="w-full">
             {playersList && (
                 <Table>
                     <TableCaption>Liste des joueurs</TableCaption>
@@ -75,6 +75,6 @@ export const LobbyGame: FC<LobbyGameProps> = (props) => {
                 </Table>
             )}
             <Button onClick={() => handleStartGame()}>Commencer la partie</Button>
-        </div>
+        </span>
     );
 }

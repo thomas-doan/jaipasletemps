@@ -29,10 +29,11 @@ interface QuizProps {
   gameId: string;
   playersList: any[];
   setPlayersList: (value: any[]) => void;
+  setOpen: (value: boolean) => void;
 }
 
 export const QuizGame: FC<QuizProps> = (props) => {
-  const { gameId, playersList, setPlayersList } = props;
+  const { gameId, playersList, setOpen } = props;
   const { socket } = useSocket();
   const [question, setQuestion] = useState<Question>();
   const [answer, setAnswer] = useState<string>("");
@@ -114,8 +115,6 @@ export const QuizGame: FC<QuizProps> = (props) => {
     });
   };
 
-  console.log("scorePlayer", scorePlayer);
-
   return (
     <div className="flex flex-col justify-between items-center w-full h-full">
       <div className="w-full">
@@ -190,6 +189,28 @@ export const QuizGame: FC<QuizProps> = (props) => {
               </TableBody>
             </Table>
           </div>
+        )}
+        {/* {endGame && (
+          <Button
+            onClick={() => {
+              socket.emit("restartGame", {
+                event: "restartGame",
+                data: { gameId: gameId },
+              });
+              setEndGame(false);
+            }}
+            className="bg-[#22c55e] hover:bg-green-400 border-emerald-600 text-black px-4 flex items-center space-x-2"
+          >
+            <Check />
+            <span>Rejouer</span>
+          </Button>
+        )} */}
+        {endGame && (
+          <Button
+            onClick={() => setOpen(false)}
+          >
+            <span>Fermer</span>
+          </Button>
         )}
       </div>
     </div>

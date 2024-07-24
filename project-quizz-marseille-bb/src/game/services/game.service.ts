@@ -161,12 +161,23 @@ export class GameService implements IGameService {
         this.websocketService
           .getServer()
           .to(gameId)
-          .emit(WebSocketEvents.END_GAME, { message: 'Game over', score: game.score });
+          .emit(WebSocketEvents.END_GAME, {
+            message: 'Game over',
+            score: game.score,
+          });
+
+        // this.endGame(gameId);
       }
     }, 10000);
   }
 
-  async restartGame(gameId: string): Promise<void> {
+  async deleteGame(gameId: string): Promise<void> {
+    await this.database.game.delete({
+      where: { id: gameId },
+    });
+  }
+
+  async restartGame(gameId: string,): Promise<void> {
     // Implementation for restarting the game
   }
 

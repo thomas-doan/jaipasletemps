@@ -26,14 +26,14 @@ export const RegisterForm: FC<RegisterFormProps> = (props) => {
 
     return (
         <>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-3">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" {...register("email")} />
                 <Label htmlFor="name">Pseudo</Label>
                 <Input id="name" type="text" {...register("name")} />
                 <Label htmlFor="password">Mot de passe</Label>
                 <Input id="password" type="password" {...register("password")} />
-                <Button type="submit">Inscription</Button>
+                <Button type="submit" className="w-full">Inscription</Button>
             </form>
         </>
     );

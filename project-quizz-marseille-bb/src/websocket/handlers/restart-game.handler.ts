@@ -10,6 +10,11 @@ export class RestartGameHandler implements IGameEventsHandler {
         private readonly gameService: IGameService) {}
 
     async handle(socket: Socket, data: { gameId: string }): Promise<void> {
-        //await this.gameService.restartGame();
+        const { gameId } = data;
+
+        if (!gameId) {
+            throw new Error('Game id is required');
+        }
+        await this.gameService.restartGame(gameId);
     }
 }
