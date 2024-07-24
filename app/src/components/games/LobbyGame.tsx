@@ -14,13 +14,14 @@ import {Button} from "@/components/ui/button";
 
 interface LobbyGameProps {
     gameId: string;
+    playersList: any[];
+    setPlayersList: (value: any[]) => void;
 }
+
 export const LobbyGame: FC<LobbyGameProps> = (props) => {
-    const {gameId} = props;
+    const {gameId, playersList, setPlayersList} = props;
     const {socket} = useSocket();
     const {user} = useAuth();
-    const [playersList, setPlayersList] = useState<any[]>([]);
-    const [playerJoined, setPlayerJoined] = useState(false);
 
     useEffect(() => {
         if (user.isAuth) {
@@ -32,8 +33,8 @@ export const LobbyGame: FC<LobbyGameProps> = (props) => {
     useEffect(() => {
         socket.on('playerJoined', (data) => {
             console.log('playerJoined', data);
-            setPlayerJoined(true);
         });
+
         socket.on('playersInRoom', (data) => {
             console.log('playersInRoom', data);
             setPlayersList(data);
@@ -47,31 +48,31 @@ export const LobbyGame: FC<LobbyGameProps> = (props) => {
 
     const handleStartGame = () => {
         if (!gameId) return;
-        socket.emit('startGame', {gameId: gameId});
+        socket.emit('startGame', { event: 'startGame', data: { gameId: gameId } });
     };
 
     console.log('playersList', playersList);
 
     return (
-        <div>
+        <div className="w-full">
             {playersList && (
-            <Table>
-                <TableCaption>Liste des joueurs</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-[100px]">Pseudo</TableHead>
-                        <TableHead>Status</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {playersList.map((player) => (
-                        <TableRow key={player.id}>
-                            <TableCell>{player.name}</TableCell>
-                            <TableCell>En ligne</TableCell>
+                <Table>
+                    <TableCaption>Liste des joueurs</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[100px]">Pseudo</TableHead>
+                            <TableHead className="text-right">Status</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {playersList.map((player) => (
+                            <TableRow key={player.id}>
+                                <TableCell className="w-[100px]">{player.name}</TableCell>
+                                <TableCell  className="text-right">En ligne</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             )}
             <Button onClick={() => handleStartGame()}>Commencer la partie</Button>
         </div>

@@ -11,6 +11,7 @@ import {useSocket} from "@/contexts/Socket";
 import {useAuth} from "@/contexts/AuthContext";
 import {CreateGame} from "@/components/games/CreateGame";
 import {LobbyGame} from "@/components/games/LobbyGame";
+import {QuizGame} from "@/components/games/QuizGame";
 
 interface DialogGamesProps {
     open: boolean;
@@ -40,24 +41,11 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
 
     const [steps, setSteps] = useState([...STEPS]);
     const [gameId, setGameId] = useState("");
+    const [startGame, setStartGame] = useState(false);
+    const [playersList, setPlayersList] = useState<any[]>([]);
 
     const isStepActive = (stepName: StepName) => activeStep === stepName;
-    const nextStep = () => {
-        const currentStepIndex = steps.findIndex(
-            (step) => step.name === activeStep
-        );
-        if (currentStepIndex < steps.length - 1) {
-            setActiveStep(steps[currentStepIndex + 1].name as StepName);
-        }
-    };
-    const previousStep = () => {
-        const currentStepIndex = steps.findIndex(
-            (step) => step.name === activeStep
-        );
-        if (currentStepIndex > 0) {
-            setActiveStep(steps[currentStepIndex - 1].name as StepName);
-        }
-    };
+
     useEffect(() => {
         socket.on('roomCreated', (data) => {
             console.log('roomCreated', data);
@@ -78,15 +66,18 @@ export const DialogGames: FC<DialogGamesProps> = (props) => {
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className={"lg:min-w-[960px] lg:min-h-[700px]"}>
+                <DialogContent className={"lg:min-w-[960px] lg:min-h-[700px] min-w-screen min-h-[700px]"}>
                     <DialogHeader>
                         <DialogTitle>Quiz Game</DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="w-full h-full">
                             {isStepActive("form") && (
                                 <CreateGame/>
                             )}
                             {isStepActive("lobby") && (
-                                <LobbyGame gameId={gameId}/>
+                                <LobbyGame gameId={gameId} playersList={playersList} setPlayersList={setPlayersList}/>
+                            )}
+                            {isStepActive("quiz") && (
+                                <QuizGame gameId={gameId} playersList={playersList} setPlayersList={setPlayersList} />
                             )}
                         </DialogDescription>
                     </DialogHeader>

@@ -1,62 +1,53 @@
 "use client";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { FC, use, useEffect, useState } from "react";
+import { FC } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
-interface User {
-  id?: string;
-  email?: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
-  token?: string;
-  role?: string;
-  player?: string;
-  isAuth?: boolean;
+interface HeaderProps {
+  user: any;
+  logout: any;
 }
 
-export const Header: FC = () => {
-  const [user, setUser] = useState<User | null>({ isAuth: false });
-  const [logout, setLogout] = useState(false);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (logout) {
-      localStorage.removeItem("user");
-      setUser({ isAuth: false });
-    }
-    setLogout(false);
-  }, [logout]);
+export const Header: FC<HeaderProps> = (props) => {
+  const { user, logout } = props;
 
   return (
     <header className="max-h-16 w-full flex justify-center items-center py-2 px-3 border-b">
       <div className="flex w-full justify-between">
         <div className="flex space-x-4">
-          <Button>Home</Button>
-          <Button>
-            <Link href="/games">Games</Link>
+          <Button className="bg-transparent">
+            <Link href={"/"} className="flex items-center space-x-1">
+              <Image
+                src="./assets/quizLogo.svg"
+                alt="Quiz"
+                width={32}
+                height={32}
+                priority
+              />
+              <h2 className="text-xl font-bold text-black">Quiz</h2>
+            </Link>
+          </Button>
+          <Button className="bg-slate-50 text-black">
+            <Link href="/games">Quiz</Link>
           </Button>
         </div>
         {user?.isAuth ? (
           <DropdownMenu>
-            <DropdownMenuTrigger>Profil</DropdownMenuTrigger>
+            <DropdownMenuTrigger className="bg-[#F6F5F4] px-4 rounded-md">
+              {user.player.name ? user.player.name : "profile"}
+            </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>Profil</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLogout(true)}>
+              <DropdownMenuItem>
+                <Link href="/profile">Profil</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => logout()}>
                 Déconnexion
               </DropdownMenuItem>
             </DropdownMenuContent>

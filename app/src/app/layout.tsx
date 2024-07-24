@@ -4,8 +4,8 @@ import "./globals.css";
 
 import { cn } from "@/lib/utils";
 import { SocketProvider } from "@/contexts/Socket";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { Header } from "@/components/assets/Header";
+import { AuthProvider } from "@/contexts/AuthContext";
+import Layout from "@/components/assets/Layout";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -32,8 +32,7 @@ export default function RootLayout({
       >
         <SocketProvider>
           <AuthProvider>
-            <Header />
-            {children}
+            <Layout>{children}</Layout>
           </AuthProvider>
         </SocketProvider>
       </body>
