@@ -48,6 +48,7 @@ export const QuizGame: FC<QuizProps> = (props) => {
   useEffect(() => {
     socket.on("showNextQuestion", (data) => {
       console.log("showNextQuestion", data);
+      setAnswer("");
       setQuestion(data);
       setCorrectAnswer(data.correctAnswer);
       setResultAnswer(null);

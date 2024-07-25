@@ -180,6 +180,13 @@ VALUES (UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthod
 (UUID(), 'Lean', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet utilise des sprints ?')),
 (UUID(), 'XP', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet utilise des sprints ?'));
 
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Marseille'),
+    (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet utilise des sprints ?')
+);
+
 -- Question 2
 INSERT INTO `Question` (id, text, correctAnswer, themeId)
 VALUES (UUID(), 'Quelle méthode se concentre sur l''optimisation du flux de travail ?', 'Kanban', (SELECT id FROM `Theme` WHERE name = 'Gestion de projet'));
@@ -189,6 +196,13 @@ VALUES (UUID(), 'Kanban', (SELECT id FROM `Question` WHERE text = 'Quelle métho
 (UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthode se concentre sur l''optimisation du flux de travail ?')),
 (UUID(), 'Waterfall', (SELECT id FROM `Question` WHERE text = 'Quelle méthode se concentre sur l''optimisation du flux de travail ?')),
 (UUID(), 'Agile', (SELECT id FROM `Question` WHERE text = 'Quelle méthode se concentre sur l''optimisation du flux de travail ?'));
+
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Marseille'),
+    (SELECT id FROM `Question` WHERE text = 'Quelle méthode se concentre sur l''optimisation du flux de travail ?')
+);
 
 -- Question 3
 INSERT INTO `Question` (id, text, correctAnswer, themeId)
@@ -200,6 +214,13 @@ VALUES (UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthod
 (UUID(), 'Lean', (SELECT id FROM `Question` WHERE text = 'Quelle méthode utilise des stand-ups quotidiens ?')),
 (UUID(), 'XP', (SELECT id FROM `Question` WHERE text = 'Quelle méthode utilise des stand-ups quotidiens ?'));
 
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Marseille'),
+    (SELECT id FROM `Question` WHERE text = 'Quelle méthode utilise des stand-ups quotidiens ?')
+);
+
 -- Question 4
 INSERT INTO `Question` (id, text, correctAnswer, themeId)
 VALUES (UUID(), 'Quelle méthode de gestion de projet est basée sur le manifeste Agile ?', 'Agile', (SELECT id FROM `Theme` WHERE name = 'Gestion de projet'));
@@ -210,6 +231,13 @@ VALUES (UUID(), 'Agile', (SELECT id FROM `Question` WHERE text = 'Quelle méthod
 (UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est basée sur le manifeste Agile ?')),
 (UUID(), 'Kanban', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est basée sur le manifeste Agile ?'));
 
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Marseille'),
+    (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est basée sur le manifeste Agile ?')
+);
+
 -- Question 5
 INSERT INTO `Question` (id, text, correctAnswer, themeId)
 VALUES (UUID(), 'Quelle méthode de gestion de projet est linéaire et séquentielle ?', 'Waterfall', (SELECT id FROM `Theme` WHERE name = 'Gestion de projet'));
@@ -219,6 +247,13 @@ VALUES (UUID(), 'Waterfall', (SELECT id FROM `Question` WHERE text = 'Quelle mé
 (UUID(), 'Scrum', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est linéaire et séquentielle ?')),
 (UUID(), 'Kanban', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est linéaire et séquentielle ?')),
 (UUID(), 'Agile', (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est linéaire et séquentielle ?'));
+
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Marseille'),
+    (SELECT id FROM `Question` WHERE text = 'Quelle méthode de gestion de projet est linéaire et séquentielle ?')
+);
 
 /* QUIZ 4 */
 -- Thème
@@ -235,6 +270,7 @@ VALUES ((SELECT id FROM `Theme` WHERE name = 'Programmation'), (SELECT id FROM `
 
 -- Questions et Réponses
 -- Question 1
+-- Question 1
 INSERT INTO `Question` (id, text, correctAnswer, themeId)
 VALUES (UUID(), 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?', 'var', (SELECT id FROM `Theme` WHERE name = 'Programmation'));
 
@@ -243,6 +279,13 @@ VALUES (UUID(), 'var', (SELECT id FROM `Question` WHERE text = 'Quel mot-clé es
 (UUID(), 'int', (SELECT id FROM `Question` WHERE text = 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?')),
 (UUID(), 'float', (SELECT id FROM `Question` WHERE text = 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?')),
 (UUID(), 'double', (SELECT id FROM `Question` WHERE text = 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?'));
+
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Programmation'),
+    (SELECT id FROM `Question` WHERE text = 'Quel mot-clé est utilisé pour déclarer une variable en JavaScript ?')
+);
 
 -- Question 2
 INSERT INTO `Question` (id, text, correctAnswer, themeId)
@@ -254,6 +297,13 @@ VALUES (UUID(), 'number', (SELECT id FROM `Question` WHERE text = 'Quelle est la
 (UUID(), 'boolean', (SELECT id FROM `Question` WHERE text = 'Quelle est la sortie de console.log(typeof 42) en JavaScript ?')),
 (UUID(), 'undefined', (SELECT id FROM `Question` WHERE text = 'Quelle est la sortie de console.log(typeof 42) en JavaScript ?'));
 
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Programmation'),
+    (SELECT id FROM `Question` WHERE text = 'Quelle est la sortie de console.log(typeof 42) en JavaScript ?')
+);
+
 -- Question 3
 INSERT INTO `Question` (id, text, correctAnswer, themeId)
 VALUES (UUID(), 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?', 'switch', (SELECT id FROM `Theme` WHERE name = 'Programmation'));
@@ -263,6 +313,13 @@ VALUES (UUID(), 'switch', (SELECT id FROM `Question` WHERE text = 'Quelle struct
 (UUID(), 'if', (SELECT id FROM `Question` WHERE text = 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?')),
 (UUID(), 'for', (SELECT id FROM `Question` WHERE text = 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?')),
 (UUID(), 'while', (SELECT id FROM `Question` WHERE text = 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?'));
+
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Programmation'),
+    (SELECT id FROM `Question` WHERE text = 'Quelle structure de contrôle est utilisée pour des choix multiples en programmation ?')
+);
 
 -- Question 4
 INSERT INTO `Question` (id, text, correctAnswer, themeId)
@@ -274,6 +331,13 @@ VALUES (UUID(), '7', (SELECT id FROM `Question` WHERE text = 'Quel est le résul
 (UUID(), '8', (SELECT id FROM `Question` WHERE text = 'Quel est le résultat de 3 + 2 * 2 en programmation ?')),
 (UUID(), '5', (SELECT id FROM `Question` WHERE text = 'Quel est le résultat de 3 + 2 * 2 en programmation ?'));
 
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Programmation'),
+    (SELECT id FROM `Question` WHERE text = 'Quel est le résultat de 3 + 2 * 2 en programmation ?')
+);
+
 -- Question 5
 INSERT INTO `Question` (id, text, correctAnswer, themeId)
 VALUES (UUID(), 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?', 'push', (SELECT id FROM `Theme` WHERE name = 'Programmation'));
@@ -283,3 +347,10 @@ VALUES (UUID(), 'push', (SELECT id FROM `Question` WHERE text = 'Quelle méthode
 (UUID(), 'pop', (SELECT id FROM `Question` WHERE text = 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?')),
 (UUID(), 'shift', (SELECT id FROM `Question` WHERE text = 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?')),
 (UUID(), 'unshift', (SELECT id FROM `Question` WHERE text = 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?'));
+
+-- Ajouter la relation dans QuizQuestion
+INSERT INTO `QuizQuestion` (quizId, questionId)
+VALUES (
+    (SELECT id FROM `Quiz` WHERE name = 'Quiz Programmation'),
+    (SELECT id FROM `Question` WHERE text = 'Quelle méthode est utilisée pour ajouter un élément à la fin d''un tableau en JavaScript ?')
+);
